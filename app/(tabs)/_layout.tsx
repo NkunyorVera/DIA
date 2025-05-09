@@ -1,66 +1,89 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import { useAuth } from "@/context/AuthContext"; // Adjust if the path differs
+import { Ionicons } from "@expo/vector-icons"; // Only import Ionicons now
+import { Redirect, Tabs } from "expo-router";
+import React from "react";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
+export default function TabsLayout() {
+  const { isLoggedIn } = useAuth();
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  if (!isLoggedIn) return <Redirect href="/login" />;
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
-      }}>
+        tabBarActiveTintColor: "#FBBF24", // Tailwind purple-600
+        tabBarInactiveTintColor: "#FFFFFF", // Tailwind gray-400
+        tabBarStyle: {
+          backgroundColor: "#9333EA",
+          borderTopWidth: 1,
+          borderTopColor: "#E5E7EB", // Tailwind gray-200
+          height: 60,
+          paddingBottom: 6,
+          paddingTop: 4,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: "500",
+        },
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Home",
+          tabBarIcon: ({ color }) => (
+            <TabIcon icon="home-outline" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ color }) => (
+            <TabIcon icon="person-outline" color={color} />
+          ),
+        }}
+      />
       <Tabs.Screen
         name="setting"
         options={{
-          title: 'Settings',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="gearshape.fill" color={color} />,
+          title: "Settings",
+          tabBarIcon: ({ color }) => (
+            <TabIcon icon="settings-outline" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="notification"
+        options={{
+          title: "Notifications",
+          tabBarIcon: ({ color }) => (
+            <TabIcon icon="notifications-outline" color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="chats"
         options={{
-          title: 'Chats',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="message.fill" color={color} />,
+          title: "Chats",
+          tabBarIcon: ({ color }) => (
+            <TabIcon icon="chatbox-ellipses-outline" color={color} />
+          ),
         }}
       />
-        <Tabs.Screen
-          name="index"
-          options={{
-            title: 'Home',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="house" color={color} />,
-          }}
-        />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.crop.circle" color={color} />,
-        }}
-      />
-          <Tabs.Screen
-            name="notification"
-            options={{
-              title: 'Notification',
-              tabBarIcon: ({ color }) => <IconSymbol size={28} name="bell.fill" color={color} />,
-            }}
-          />
     </Tabs>
   );
+}
+
+// ✅ Reusable tab icon component using only Ionicons now
+function TabIcon({
+  icon,
+  color,
+}: {
+  icon: keyof typeof Ionicons.glyphMap; // Only Ionicons glyph map
+  color: string;
+}) {
+  return <Ionicons name={icon} size={24} color={color} />;
 }

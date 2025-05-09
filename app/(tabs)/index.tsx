@@ -1,73 +1,68 @@
-// import { View, Text } from 'react-native'
-// import React from 'react'
+import { useAuth } from "@/context/AuthContext";
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { Image, ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+// Adjust path as needed
 
-// export default function index() {
-//   return (
-//     <View>
-//       <Text>index</Text>
-//     </View>
-//   )
-// }
-import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
-import React from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+export default function HomeScreen() {
+  const { user } = useAuth();
+  const userName = user?.name || "User";
+  const disability = user?.disability || "Your unique ability";
 
-export default function index() {
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="px-4 py-2">
+      <ScrollView className="px-4 py-6 space-y-4">
         {/* Header */}
-        <View className="flex-row justify-between items-center mb-4">
-          <Ionicons name="construct-outline" size={24} color="#A855F7" />
-          <Ionicons name="notifications-outline" size={24} color="#A855F7" />
+        <View className="flex-row justify-between items-center mb-2">
+          <Ionicons name="construct-outline" size={28} color="#9333EA" />
+          <Ionicons name="notifications-outline" size={28} color="#9333EA" />
         </View>
 
         {/* Welcome Text */}
-        <Text className="text-2xl font-bold">Welcome,{"\n"}Taken Vera.</Text>
-        <Text className="text-base text-gray-500 mb-4">Your disability here is an ability</Text>
+        <View className="mb-6">
+          <Text className="text-3xl font-extrabold text-gray-900 leading-snug">
+            Welcome,{"\n"}
+            {userName}.
+          </Text>
+          <Text className="text-sm text-gray-500 mt-1">
+            Your disability here is {disability}.
+          </Text>
+        </View>
 
         {/* Cards */}
-        <View className="space-y-4">
+        <View className="gap-4">
           <Card title="Find Jobs" bg="bg-purple-600" icon="briefcase-outline" />
-          <Card title="Health Benefits" bg="bg-red-600" icon="heart-outline" />
-          <Card title="Communities" bg="bg-green-600" icon="people-outline" />
+          <Card title="Health Benefits" bg="bg-rose-600" icon="heart-outline" />
+          <Card title="Communities" bg="bg-emerald-600" icon="people-outline" />
         </View>
       </ScrollView>
-
-      {/* Bottom Navigation */}
-      <View className="flex-row justify-between bg-purple-600 p-2 px-4">
-        <BottomTab icon="home" label="Home" />
-        <BottomTab icon="person-outline" label="Profile" />
-        <BottomTab icon="chatbubble-outline" label="Chat" />
-        <BottomTab icon="settings-outline" label="Setting" />
-        <BottomTab icon="notifications-outline" label="Notification" />
-      </View>
     </SafeAreaView>
   );
 }
 
-function Card({ title, bg, icon }:{title: string; bg: string; icon:"briefcase-outline"|"heart-outline"|"people-outline"}) {
+function Card({
+  title,
+  bg,
+  icon,
+}: {
+  title: string;
+  bg: string;
+  icon: "briefcase-outline" | "heart-outline" | "people-outline";
+}) {
   return (
-    <View className={`rounded-xl p-4 ${bg} flex-row items-center justify-between`}>
+    <View
+      className={`rounded-2xl px-5 py-4 ${bg} flex-row items-center justify-between shadow-md`}
+    >
       <Image
-        source={require('../assets/images/icon.png')} // Replace with your actual image
-        className="w-12 h-12"
+        source={require("../../assets/images/icon.png")}
+        className="w-14 h-14 rounded-full"
       />
-      <View>
-        <Text className="text-white text-lg font-semibold">{title}</Text>
+      <View className="flex-1 px-4">
+        <Text className="text-white text-lg font-semibold mb-1">{title}</Text>
         <Ionicons name={icon} size={20} color="#fff" />
       </View>
-      <Ionicons name="mic-outline" size={20} color="#fff" />
+      <Ionicons name="mic-outline" size={24} color="#fff" />
     </View>
-  );
-}
-
-function BottomTab({ icon, label }:{icon:"home"|"person-outline"|"chatbubble-outline"|"settings-outline"|"notifications-outline"; label: string}) {
-  return (
-    <TouchableOpacity className="items-center">
-      <Ionicons name={icon} size={22} color="#fff" />
-      <Text className="text-white text-xs">{label}</Text>
-    </TouchableOpacity>
   );
 }
