@@ -14,8 +14,8 @@ export default function SignUpScreen() {
     <View className="flex-1 justify-center items-center p-6">
       <View className="w-full bg-white items-center mb-4 p-10 rounded-lg shadow-lg">
         <View className="items-center mb-4">
-          <Ionicons name="mic-outline" size={28} color="#A855F7" />
-          <Text className="text-2xl text-purple-600 font-semibold mt-2">
+          <Ionicons name="mic-outline" size={28} color="#FF8C42" />
+          <Text className="text-2xl text-secondary font-semibold mt-2">
             SIGN UP
           </Text>
         </View>
@@ -59,7 +59,7 @@ export default function SignUpScreen() {
         />
 
         <TouchableOpacity
-          className="bg-purple-600 py-3 rounded-full items-center mb-4 w-full"
+          className="bg-secondary py-3 rounded-full items-center mb-4 w-full"
           onPress={() => {
             login;
             navigate("/(tabs)");
@@ -70,7 +70,7 @@ export default function SignUpScreen() {
 
         <Text className="text-center text-sm">
           Already have an account?{" "}
-          <Link className="text-purple-600 underline" href="/login">
+          <Link className="text-secondary underline" href="/login">
             Login
           </Link>
         </Text>

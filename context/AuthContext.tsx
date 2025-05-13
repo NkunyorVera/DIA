@@ -13,7 +13,9 @@ interface AuthContextType {
   user: User;
   isLoggedIn: boolean;
   setUser: (user: User) => void;
-  login: () => void;
+  login: () => Promise<boolean>;
+  loginWithGoogle: () => Promise<void>;
+  loginWithFacebook: () => Promise<void>;
   logout: () => void;
   handleChange: (field: keyof User, value: string) => void;
 }
@@ -33,20 +35,55 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User>(defaultUser);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const login = () => setIsLoggedIn(true);
+  const login = async () => {
+    // Simulate login success
+    setIsLoggedIn(true);
+    return true;
+  };
+
+  const loginWithGoogle = async () => {
+    // TODO: Replace with actual Google login logic
+    console.log("Google login placeholder");
+    setUser({
+      ...defaultUser,
+      name: "Google User",
+      email: "google@example.com",
+    });
+    setIsLoggedIn(true);
+  };
+
+  const loginWithFacebook = async () => {
+    // TODO: Replace with actual Facebook login logic
+    console.log("Facebook login placeholder");
+    setUser({
+      ...defaultUser,
+      name: "Facebook User",
+      email: "facebook@example.com",
+    });
+    setIsLoggedIn(true);
+  };
+
   const logout = () => {
     setUser(defaultUser);
     setIsLoggedIn(false);
   };
 
-  // Unified field update function
   const handleChange = (field: keyof User, value: string) => {
     setUser((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoggedIn, setUser, login, logout, handleChange }}
+      value={{
+        user,
+        isLoggedIn,
+        setUser,
+        login,
+        loginWithGoogle,
+        loginWithFacebook,
+        logout,
+        handleChange,
+      }}
     >
       {children}
     </AuthContext.Provider>

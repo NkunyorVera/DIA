@@ -19,7 +19,7 @@ export default function AuthInput({
   secureTextEntry = false,
 }: Props) {
   return (
-    <View className="flex-row items-center border-b border-gray-300 mb-4">
+    <View className="flex-row items-center border-b border-gray-400 mb-4">
       <Ionicons name={icon} size={18} className="mr-2" />
       <TextInput
         placeholder={placeholder}

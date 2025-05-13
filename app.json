@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "merde",
-    "slug": "merde",
+    "name": "DisabiltyAid",
+    "slug": "DisabiltyAid",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "merde",
+    "icon": "./assets/logo.png",
+    "scheme": "DisabiltyAid",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -13,7 +13,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
