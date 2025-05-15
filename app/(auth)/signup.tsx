@@ -8,7 +8,21 @@ import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 export default function SignUpScreen() {
-  const { user, handleChange, login } = useAuth();
+  const [user, setUser] = React.useState({
+    name: "",
+    email: "",
+    phoneNumber: "",
+    password: "",
+  });
+
+  const handleChange = (field: string, value: string) => {
+    setUser((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const { signup } = useAuth();
 
   return (
     <View className="flex-1 justify-center items-center p-6">
@@ -22,7 +36,7 @@ export default function SignUpScreen() {
 
         <AuthInput
           icon="person-outline"
-          placeholder="Enter username"
+          placeholder="Enter name"
           value={user.name}
           onChangeText={(val: string) => handleChange("name", val)}
         />
@@ -32,24 +46,7 @@ export default function SignUpScreen() {
           value={user.email}
           onChangeText={(val: string) => handleChange("email", val)}
         />
-        <AuthInput
-          icon="location-outline"
-          placeholder="Enter Location"
-          value={user.location}
-          onChangeText={(val: string) => handleChange("location", val)}
-        />
-        <AuthInput
-          icon="help-circle-outline"
-          placeholder="Enter Disability"
-          value={user.disability}
-          onChangeText={(val: string) => handleChange("disability", val)}
-        />
-        <AuthInput
-          icon="call-outline"
-          placeholder="Enter phone number"
-          value={user.phoneNumber}
-          onChangeText={(val: string) => handleChange("phoneNumber", val)}
-        />
+
         <AuthInput
           icon="lock-closed-outline"
           placeholder="Enter password"
@@ -60,17 +57,17 @@ export default function SignUpScreen() {
 
         <TouchableOpacity
           className="bg-secondary py-3 rounded-full items-center mb-4 w-full"
-          onPress={() => {
-            login;
+          onPress={async () => {
+            await signup(user);
             navigate("/(tabs)");
           }}
         >
           <Text className="text-white font-semibold">Submit</Text>
         </TouchableOpacity>
 
-        <Text className="text-center text-sm">
+        <Text className="text-center">
           Already have an account?{" "}
-          <Link className="text-secondary underline" href="/login">
+          <Link className="text-secondary underline" href="/signin">
             Login
           </Link>
         </Text>

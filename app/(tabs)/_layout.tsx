@@ -4,11 +4,11 @@ import { Redirect, Tabs } from "expo-router";
 import React from "react";
 
 export default function TabsLayout() {
-  const { isLoggedIn } = useAuth();
+  const { session } = useAuth();
 
-  if (!isLoggedIn) return <Redirect href="/onboarding" />;
-
-  return (
+  return !session ? (
+    <Redirect href={"/signin"} />
+  ) : (
     <Tabs
       screenOptions={{
         headerShown: false,
