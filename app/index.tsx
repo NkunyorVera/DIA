@@ -1,4 +1,6 @@
+import { useAuth } from "@/context/AuthContext";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { Redirect } from "expo-router";
 import { navigate } from "expo-router/build/global-state/routing";
 import React, { useState } from "react";
 import { Dimensions, Image, Text, TouchableOpacity, View } from "react-native";
@@ -45,7 +47,8 @@ type Props = NativeStackScreenProps<RootStackParamList, "Onboarding">;
 
 const OnboardingScreen: React.FC<Props> = () => {
   const [activeIndex, setActiveIndex] = useState(0);
-
+  const { session } = useAuth();
+  if (session) return <Redirect href={"/(tabs)"} />;
   return (
     <SafeAreaView className="flex-1 bg-background items-center justify-center">
       <View className="mb-10 items-center justify-center">
@@ -94,14 +97,14 @@ const OnboardingScreen: React.FC<Props> = () => {
         className="mt-8 bg-secondary px-10 py-4 rounded-full w-4/5 items-center"
         onPress={() =>
           activeIndex === slides.length - 1
-            ? navigate("/login")
+            ? navigate("/signin")
             : setActiveIndex((prev) =>
                 activeIndex === slides.length - 1 ? prev : prev + 1
               )
         }
       >
         <Text className="text-white font-bold text-base">
-          {activeIndex === slides.length - 1 ? "Login" : "Skip"}
+          {activeIndex === slides.length - 1 ? "Signin" : "Skip"}
         </Text>
       </TouchableOpacity>
     </SafeAreaView>

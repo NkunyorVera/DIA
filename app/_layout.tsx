@@ -10,6 +10,12 @@ export default function RootLayout() {
     <AuthProvider>
       <View className="flex-1 bg-background">
         <Stack>
+          <Stack.Screen
+            name="index"
+            options={{
+              headerShown: false,
+            }}
+          />
           {/* <Stack.Screen name="index" options={{ headerShown: false }} /> */}
           <Stack.Screen
             name="(tabs)"
@@ -19,12 +25,6 @@ export default function RootLayout() {
           />
           <Stack.Screen
             name="(auth)"
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="onboarding"
             options={{
               headerShown: false,
             }}
