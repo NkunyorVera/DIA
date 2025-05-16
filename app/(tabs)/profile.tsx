@@ -1,8 +1,10 @@
 import { useAuth } from "@/context/AuthContext";
+import { databases, storage } from "@/lib/appwrite";
 import { Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   SafeAreaView,
@@ -12,29 +14,67 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { ID } from "react-native-appwrite";
 
 export default function ProfileScreen() {
   const { user, signout } = useAuth();
-
   const [formData, setFormData] = useState({
-    name: user?.name || "",
-    email: user?.email || "",
-    phone: user?.phone || "",
-    address: user?.address || "",
-    disability: user?.disability || "",
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    disability: "",
   });
+  const [profileImage, setProfileImage] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const [profileImage, setProfileImage] = useState(
-    "https://i.pravatar.cc/150?img=12"
-  );
+  const fetchUserInfo = async () => {
+    try {
+      const res = await databases.getDocument(
+        process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+        process.env.EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID!,
+        user.$id
+      );
+      setFormData({
+        name: res.name || "",
+        email: res.email || "",
+        phone: res.phone || "",
+        address: res.address || "",
+        disability: res.disability || "",
+      });
+
+      setProfileImage(
+        res.photoUrl || "https://freesvg.org/img/abstract-user-flat-4.png"
+      );
+    } catch (err) {
+      Alert.alert("Error", "Failed to load user info.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (key: string, value: string) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleUpdate = () => {
-    // TODO: Call backend (Appwrite/Firebase) to update user info
-    Alert.alert("Profile Updated", "Your information has been updated.");
+  const handleUpdate = async () => {
+    try {
+      await databases.updateDocument(
+        process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+        process.env.EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID!,
+
+        user.$id,
+        {
+          ...formData,
+          photoUrl: profileImage,
+        }
+      );
+      Alert.alert("Success", "Profile updated successfully.");
+    } catch (err) {
+      Alert.alert("Error", "Failed to update profile.");
+      console.error(err);
+    }
   };
 
   const handleChangeProfileImage = async () => {
@@ -50,16 +90,45 @@ export default function ProfileScreen() {
       quality: 0.7,
     });
 
-    if (!result.canceled && result.assets && result.assets.length > 0) {
-      setProfileImage(result.assets[0].uri);
-      // TODO: Upload to storage and update user's profile photo URL
+    if (!result.canceled && result.assets.length > 0) {
+      try {
+        const file = await storage.createFile(
+          process.env.EXPO_PUBLIC_APPWRITE_STORAGE_ID!,
+          ID.unique(),
+          {
+            uri: result.assets[0].uri,
+            name: "profile.jpg",
+            type: "image/jpeg",
+            size: 0,
+          }
+        );
+        const imageUrl = storage.getFileView(
+          process.env.EXPO_PUBLIC_APPWRITE_STORAGE_ID!,
+          file.$id
+        ).href;
+        setProfileImage(imageUrl);
+      } catch (err) {
+        Alert.alert("Upload Error", "Could not upload image.");
+        console.error(err);
+      }
     }
   };
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, []);
+
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 pt-6">
       <ScrollView className="flex-1 bg-white px-6 py-8">
-        {/* Profile Image */}
         <View className="items-center mb-6">
           <Image
             source={{ uri: profileImage }}
@@ -75,7 +144,6 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Input Fields */}
         <View className="space-y-4">
           <InputField
             label="Name"
@@ -105,7 +173,6 @@ export default function ProfileScreen() {
           />
         </View>
 
-        {/* Save Button */}
         <TouchableOpacity
           onPress={handleUpdate}
           className="mt-6 bg-primary py-3 rounded-xl items-center"
@@ -113,7 +180,6 @@ export default function ProfileScreen() {
           <Text className="text-white font-semibold text-lg">Save Changes</Text>
         </TouchableOpacity>
 
-        {/* Logout Button */}
         <TouchableOpacity
           onPress={signout}
           className="mt-4 bg-red-100 py-3 rounded-xl items-center flex-row justify-center"

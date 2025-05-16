@@ -14,6 +14,7 @@ export default function HomeScreen(): JSX.Element {
   const [showUserInfoModal, setShowUserInfoModal] = useState<boolean>(false);
   const [showProfileImageModal, setShowProfileImageModal] =
     useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   const checkUserProfile = async (): Promise<void> => {
     try {
@@ -26,6 +27,8 @@ export default function HomeScreen(): JSX.Element {
       if (res.total === 0) {
         setShowUserInfoModal(true);
       }
+
+      setCurrentUser(res.documents[0]);
     } catch (err) {
       console.error("Error checking user profile:", err);
     }
@@ -40,8 +43,8 @@ export default function HomeScreen(): JSX.Element {
     setShowProfileImageModal(true);
   };
 
-  const userName: string = user?.name || "User";
-  const disability: string = user?.disability || "Your unique ability";
+  const userName: string = currentUser?.name || "User";
+  const disability: string = currentUser?.disability || "Your unique ability";
 
   return (
     <SafeAreaView className="flex-1 bg-white">
