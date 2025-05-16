@@ -3,13 +3,14 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { Alert, SafeAreaView, Text } from "react-native";
 import { AppwriteException } from "react-native-appwrite";
 
-type UserType = {
+export type UserType = {
   email: string;
   name?: string;
   phone?: string;
   address?: string;
   password: string;
   disability?: string;
+  photoUrl?: string;
 };
 
 type AuthContextType = {

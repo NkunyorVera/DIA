@@ -1,18 +1,61 @@
 import FeatureCard from "@/components/FeatureCard";
+import ProfileImageModal from "@/components/ProfileImageModal";
+import UserInfoModal from "@/components/UserInfoModal";
 import { useAuth } from "@/context/AuthContext";
+import { databases } from "@/lib/appwrite";
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { JSX, useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
+import { Query } from "react-native-appwrite";
 import { SafeAreaView } from "react-native-safe-area-context";
-// Adjust path as needed
 
-export default function HomeScreen() {
+export default function HomeScreen(): JSX.Element {
   const { user } = useAuth();
-  const userName = user?.name || "User";
-  const disability = user?.disability || "Your unique ability";
+  const [showUserInfoModal, setShowUserInfoModal] = useState<boolean>(false);
+  const [showProfileImageModal, setShowProfileImageModal] =
+    useState<boolean>(false);
+
+  const checkUserProfile = async (): Promise<void> => {
+    try {
+      const res = await databases.listDocuments(
+        process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+        process.env.EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID!,
+        [Query.equal("userId", user?.$id)]
+      );
+
+      if (res.total === 0) {
+        setShowUserInfoModal(true);
+      }
+    } catch (err) {
+      console.error("Error checking user profile:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.$id) checkUserProfile();
+  }, [user]);
+
+  const openNextModal = () => {
+    setShowUserInfoModal(false);
+    setShowProfileImageModal(true);
+  };
+
+  const userName: string = user?.name || "User";
+  const disability: string = user?.disability || "Your unique ability";
 
   return (
     <SafeAreaView className="flex-1 bg-white">
+      <UserInfoModal
+        visible={showUserInfoModal}
+        onClose={() => setShowUserInfoModal(false)}
+        callbackFunc={openNextModal}
+      />
+
+      <ProfileImageModal
+        visible={showProfileImageModal}
+        onClose={() => setShowProfileImageModal(false)}
+      />
+
       <ScrollView className="px-4 py-6 space-y-4">
         {/* Header */}
         <View className="flex-row justify-between items-center mb-2">
