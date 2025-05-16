@@ -69,6 +69,7 @@ export default function ProfileImageModal({
         ID.unique(),
         file
       );
+      onClose();
       return uploaded?.$id;
     } catch (error) {
       if (error instanceof AppwriteException)
@@ -87,8 +88,6 @@ export default function ProfileImageModal({
     if (imageId) {
       await updateUserProfileWithImage(imageId);
     }
-
-    onClose();
   };
 
   return (
@@ -108,6 +107,7 @@ export default function ProfileImageModal({
             <Image
               source={{ uri: image }}
               style={{ width: 100, height: 100, borderRadius: 50 }}
+              className="mb-5"
             />
           )}
 
@@ -126,7 +126,7 @@ export default function ProfileImageModal({
           </TouchableOpacity>
 
           <TouchableOpacity onPress={onClose}>
-            <Text className="text-gray-600 mt-2">Skip</Text>
+            <Text className="text-gray-600 mt-5">Skip</Text>
           </TouchableOpacity>
         </View>
       </View>
