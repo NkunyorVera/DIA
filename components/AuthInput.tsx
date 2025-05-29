@@ -8,6 +8,8 @@ type Props = {
   value: string;
   onChangeText: (text: string) => void;
   secureTextEntry?: boolean;
+  onFocus?: () => void;
+  keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
 };
 
 export default function AuthInput({
@@ -16,6 +18,8 @@ export default function AuthInput({
   value,
   onChangeText,
   secureTextEntry = false,
+  onFocus,
+  keyboardType = "default",
 }: Props) {
   const isPasswordField = placeholder.toLowerCase().includes("password");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -29,6 +33,8 @@ export default function AuthInput({
         value={value}
         onChangeText={onChangeText}
         secureTextEntry={isPasswordField && !isPasswordVisible}
+        onFocus={onFocus}
+        keyboardType={keyboardType}
       />
       {isPasswordField && (
         <TouchableOpacity

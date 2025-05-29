@@ -1,11 +1,19 @@
-// screens/SignUpScreen.tsx
 import AuthInput from "@/components/AuthInput";
-import { useAuth } from "@/context/AuthContext";
-import { Ionicons } from "@expo/vector-icons";
+import { useAuth, UserType } from "@/context/AuthContext";
+import { account } from "@/lib/appwrite";
 import { Link } from "expo-router";
 import { navigate } from "expo-router/build/global-state/routing";
-import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import * as Speech from "expo-speech";
+import React, { useEffect } from "react";
+import {
+  Alert,
+  ImageBackground,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { AppwriteException } from "react-native-appwrite";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SignUpScreen() {
   const [user, setUser] = React.useState({
@@ -14,6 +22,18 @@ export default function SignUpScreen() {
     phoneNumber: "",
     password: "",
   });
+  const [loading, setLoading] = React.useState(false);
+  const { updateUserAndSession } = useAuth();
+
+  // Announce screen on load
+  useEffect(() => {
+    const welcomeMessage =
+      "Sign up screen. Please enter your details to create an account.";
+    Speech.speak(welcomeMessage, { rate: 0.9 });
+    return () => {
+      Speech.stop();
+    };
+  }, []);
 
   const handleChange = (field: string, value: string) => {
     setUser((prev) => ({
@@ -22,56 +42,101 @@ export default function SignUpScreen() {
     }));
   };
 
-  const { signup } = useAuth();
+  const handleFocus = (fieldName: string) => {
+    Speech.speak(fieldName, { rate: 0.9 });
+  };
+
+  const signup = async ({ email, password, name }: UserType) => {
+    try {
+      setLoading(true);
+      // Step 1: Create user account
+      await account.create("unique()", email, password, name);
+      // Step 2: Create email-password session
+      await account.createEmailPasswordSession(email, password);
+
+      await account.get();
+      updateUserAndSession();
+      Alert.alert("Success", "Signup successful");
+    } catch (error) {
+      if (error instanceof AppwriteException) {
+        Alert.alert("Error", ` ${error.cause || error.message}`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <View className="flex-1 justify-center items-center p-6">
-      <View className="w-full bg-white items-center mb-4 p-10 rounded-lg shadow-lg">
-        <View className="items-center mb-4">
-          <Ionicons name="mic-outline" size={28} color="#FF8C42" />
-          <Text className="text-2xl text-secondary font-semibold mt-2">
-            SIGN UP
-          </Text>
+    <SafeAreaView edges={[]} className="flex-1 bg-white">
+      <ImageBackground
+        source={{
+          uri: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80",
+        }}
+        resizeMode="cover"
+        className="flex-1 justify-center"
+      >
+        <View className="flex-1 justify-center items-center p-6 bg-black/30">
+          <View className="w-full bg-white/90 items-center mb-4 p-8 rounded-lg shadow-lg">
+            <View className="items-center mb-4">
+              <Text className="text-2xl text-blue-600 font-semibold mt-2">
+                Create Account
+              </Text>
+            </View>
+
+            <AuthInput
+              icon="person-outline"
+              placeholder="Full Name"
+              value={user.name}
+              onChangeText={(val: string) => handleChange("name", val)}
+              onFocus={() => handleFocus("Full Name")}
+            />
+            <AuthInput
+              icon="mail-outline"
+              placeholder="Email Address"
+              value={user.email}
+              onChangeText={(val: string) => handleChange("email", val)}
+              onFocus={() => handleFocus("Email")}
+            />
+            <AuthInput
+              icon="lock-closed-outline"
+              placeholder="Create Password"
+              value={user.password}
+              onChangeText={(val: string) => handleChange("password", val)}
+              secureTextEntry
+              onFocus={() => handleFocus("Password")}
+            />
+
+            <TouchableOpacity
+              className="bg-blue-600 flex items-center justify-center py-3 rounded-full mb-4 w-full shadow-md"
+              onPress={async () => {
+                await signup(user);
+                navigate("/(tabs)");
+              }}
+              onFocus={() => Speech.speak("Submit button", { rate: 0.9 })}
+              disabled={loading}
+            >
+              {loading ? (
+                <View className="w-8 h-8 border-4 border-white/50 border-t-white rounded-full animate-spin" />
+              ) : (
+                <Text className="text-white font-bold text-center">
+                  Create Account
+                </Text>
+              )}
+            </TouchableOpacity>
+
+            <Text className="text-center text-gray-600">
+              Already have an account?{" "}
+              <Link
+                className="text-blue-600 underline"
+                href="/signin"
+                onPress={() => Speech.speak("Login link", { rate: 0.9 })}
+              >
+                Login
+              </Link>
+            </Text>
+          </View>
         </View>
-
-        <AuthInput
-          icon="person-outline"
-          placeholder="Enter name"
-          value={user.name}
-          onChangeText={(val: string) => handleChange("name", val)}
-        />
-        <AuthInput
-          icon="mail-outline"
-          placeholder="Enter email"
-          value={user.email}
-          onChangeText={(val: string) => handleChange("email", val)}
-        />
-
-        <AuthInput
-          icon="lock-closed-outline"
-          placeholder="Enter password"
-          value={user.password}
-          onChangeText={(val: string) => handleChange("password", val)}
-          secureTextEntry
-        />
-
-        <TouchableOpacity
-          className="bg-secondary py-3 rounded-full items-center mb-4 w-full"
-          onPress={async () => {
-            await signup(user);
-            navigate("/(tabs)");
-          }}
-        >
-          <Text className="text-white font-semibold">Submit</Text>
-        </TouchableOpacity>
-
-        <Text className="text-center">
-          Already have an account?{" "}
-          <Link className="text-secondary underline" href="/signin">
-            Login
-          </Link>
-        </Text>
-      </View>
-    </View>
+      </ImageBackground>
+    </SafeAreaView>
   );
 }

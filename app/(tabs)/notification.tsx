@@ -1,13 +1,13 @@
 import { Feather } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const notificationsMock = [
   {
@@ -57,7 +57,7 @@ export default function NotificationScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 py-8">
+    <SafeAreaView edges={[]} className="flex-1 bg-white">
       <ScrollView className="flex-1 bg-white px-6 pt-8">
         <Text className="text-2xl font-bold mb-6 text-gray-800">
           Notifications

@@ -17,26 +17,25 @@ type AuthContextType = {
   loading: boolean;
   session: any;
   user: any;
-  signin: (param: UserType) => Promise<void>;
+  updateUserAndSession: () => Promise<void>;
   signout: () => Promise<void>;
-  signup: (param: UserType) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
   loading: true,
   session: null,
   user: null,
-  signin: async () => {},
+  updateUserAndSession: async () => {},
   signout: async () => {},
-  signup: async () => {},
 });
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [session, setSession] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
+    if (session) return; // Prevent re-initialization if session already exists
     const init = async () => {
       try {
         const responseSession = await account.getSession("current");
@@ -46,7 +45,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setUser(responseUser);
         }
       } catch (error) {
-        Alert.alert("Error", "Error fetching session or user");
+        if (error instanceof AppwriteException) {
+          Alert.alert("Error", ` ${error.cause || error.message}`);
+        }
         setSession(null);
         setUser(null);
       } finally {
@@ -56,46 +57,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     init();
   }, []);
-
-  const signin = async ({ email, password }: UserType) => {
-    try {
-      setLoading(true);
-      const responseSession = await account.createEmailPasswordSession(
-        email,
-        password
-      );
-      setSession(responseSession);
-      const responseUser = await account.get();
-      setUser(responseUser);
-      Alert.alert("Success", "Signin successfull");
-    } catch (error) {
-      Alert.alert("Error", "Error signing in");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const signup = async ({ email, password, name }: UserType) => {
-    try {
-      setLoading(true);
-      // Step 1: Create user account
-      await account.create("unique()", email, password, name);
-      // Step 2: Automatically log in after registration
-      const responseSession = await account.createEmailPasswordSession(
-        email,
-        password
-      );
-      setSession(responseSession);
-
-      // Step 3: Fetch user info
-      const responseUser = await account.get();
-      setUser(responseUser);
-    } catch (error) {
-      console.error("Error signing up:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const signout = async () => {
     try {
@@ -109,9 +70,26 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const updateUserAndSession = async () => {
+    try {
+      setLoading(true);
+      const responseSession = await account.getSession("current");
+      if (responseSession) {
+        setSession(responseSession);
+        const responseUser = await account.get();
+        setUser(responseUser);
+      }
+    } catch (error) {
+      console.error("Error updating user and session:", error);
+      Alert.alert("Error", "Failed to update user and session");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ loading, session, user, signin, signout, signup }}
+      value={{ loading, session, user, updateUserAndSession, signout }}
     >
       {loading ? (
         <SafeAreaView className="flex-1 items-center justify-center">

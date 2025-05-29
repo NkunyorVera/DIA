@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   Alert,
   Image,
-  SafeAreaView,
   ScrollView,
   Text,
   TextInput,
@@ -15,6 +14,7 @@ import {
   View,
 } from "react-native";
 import { ID } from "react-native-appwrite";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
   const { user, signout } = useAuth();
@@ -120,15 +120,15 @@ export default function ProfileScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center">
+      <SafeAreaView edges={[]} className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 pt-6">
-      <ScrollView className="flex-1 bg-white px-6 py-8">
+    <SafeAreaView edges={[]} className="flex-1 bg-white">
+      <ScrollView className="flex-1 bg-white px-6 py-4">
         <View className="items-center mb-6">
           <Image
             source={{ uri: profileImage }}

@@ -87,11 +87,25 @@ export default function TabsLayout() {
           tabBarIcon: ({ color }) => <TabIcon icon="settings" color={color} />,
         }}
       />
+
+      {/* Hidden screens - removed from tab bar completely */}
+      <Tabs.Screen
+        name="community"
+        options={{
+          href: null, // This completely removes it from the tab bar
+        }}
+      />
+      <Tabs.Screen
+        name="jobs"
+        options={{
+          href: null, // This completely removes it from the tab bar
+        }}
+      />
     </Tabs>
   );
 }
 
-// ✅ Reusable tab icon component using only Ionicons now
+// Tab icon component
 function TabIcon({
   icon,
   color,

@@ -1,62 +1,60 @@
 import { useAuth } from "@/context/AuthContext";
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Redirect } from "expo-router";
 import { navigate } from "expo-router/build/global-state/routing";
 import React, { useState } from "react";
 import { Dimensions, Image, Text, TouchableOpacity, View } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { SafeAreaView } from "react-native-safe-area-context";
-import CommunitySVG from "../assets/community.svg";
-import HealthSVG from "../assets/health.svg";
-import JobSVG from "../assets/job.svg";
 
 const { width } = Dimensions.get("window");
 
 type Slide = {
   title: string;
   description: string;
-  svg: any;
+  imageUrl: string;
 };
 
 const slides: Slide[] = [
   {
-    title: "Job Oopportunities and listings",
+    title: "Inclusive Job Opportunities",
+    description: "Find disability-friendly employers and career resources.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    title: "Supportive Community",
+    description: "Connect with others who understand your experiences.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    title: "Find Accessible Healthcare",
     description:
-      "For enhanced accessibility and inclusive professional networking.",
-    svg: <JobSVG width={width * 0.85} height={256} fill={"#FF8C42"} />,
-  },
-  {
-    title: "Join Community Forums",
-    description: "For disability inclusive communication and networking.",
-    svg: <CommunitySVG width={width * 0.85} height={256} fill={"#FF8C42"} />,
-  },
-  {
-    title: "Health Benefit Management",
-    description: "Easily access and manage healthcare resources.",
-    svg: <HealthSVG width={width * 0.85} height={256} fill={"#FF8C42"} />,
+      "Easily search for doctors based on location, specialty, and availability.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
   },
 ];
 
-// Replace with your actual navigation type
-type RootStackParamList = {
-  Onboarding: undefined;
-  Login: undefined;
-};
-
-type Props = NativeStackScreenProps<RootStackParamList, "Onboarding">;
-
-const OnboardingScreen: React.FC<Props> = () => {
+const OnboardingScreen: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const { session } = useAuth();
+
   if (session) return <Redirect href={"/(tabs)"} />;
+
   return (
-    <SafeAreaView className="flex-1 bg-background items-center justify-center">
+    <SafeAreaView className="flex-1 bg-white items-center justify-center relative">
+      <View className="absolute top-10 right-6 z-10">
+        <TouchableOpacity onPress={() => navigate("/signin")}>
+          <Text className="text-blue-800 font-semibold text-lg">Skip</Text>
+        </TouchableOpacity>
+      </View>
       <View className="mb-10 items-center justify-center">
         <Image
           source={require("../assets/logo.png")}
-          className=" absolute"
+          className="absolute"
           resizeMode="contain"
-          style={{ width: 140, height: 140 }}
+          style={{ width: 100, height: 100 }}
         />
       </View>
       <Carousel
@@ -68,14 +66,19 @@ const OnboardingScreen: React.FC<Props> = () => {
         onSnapToItem={(index) => setActiveIndex(index)}
         style={{ display: "flex", alignItems: "center" }}
         renderItem={({ item }) => (
-          <View className=" p-6 rounded-2xl items-center">
-            <View className="w-full rounded-2xl items-center mb-5">
-              {item.svg}
+          <View className="p-6 rounded-2xl items-center">
+            <View className="w-full rounded-full border border-slate-400 items-center mb-5 shadow-lg overflow-hidden">
+              <Image
+                source={{ uri: item.imageUrl }}
+                style={{ width: width * 0.8, height: 256 }}
+                resizeMode="cover"
+                className="rounded-full"
+              />
             </View>
-            <Text className="text-primary text-xl font-bold text-center mb-2">
+            <Text className="text-gray-900 text-xl font-bold text-center mb-2">
               {item.title}
             </Text>
-            <Text className="text-text-secondary text-base text-center">
+            <Text className="text-gray-300 text-lg text-center">
               {item.description}
             </Text>
           </View>
@@ -87,14 +90,14 @@ const OnboardingScreen: React.FC<Props> = () => {
           <View
             key={index}
             className={`w-2 h-2 mx-1 rounded-full ${
-              activeIndex === index ? "bg-secondary" : "bg-border"
+              activeIndex === index ? "bg-blue-600" : "bg-blue-200"
             }`}
           />
         ))}
       </View>
 
       <TouchableOpacity
-        className="mt-8 bg-secondary px-10 py-4 rounded-full w-4/5 items-center"
+        className="mt-8 bg-blue-600 shadow-xl shadow-blue-800  px-10 py-4 rounded-full w-4/5 items-center"
         onPress={() =>
           activeIndex === slides.length - 1
             ? navigate("/signin")
@@ -104,7 +107,7 @@ const OnboardingScreen: React.FC<Props> = () => {
         }
       >
         <Text className="text-white font-bold text-base">
-          {activeIndex === slides.length - 1 ? "Signin" : "Skip"}
+          {activeIndex === slides.length - 1 ? "Get Started" : "Next"}
         </Text>
       </TouchableOpacity>
     </SafeAreaView>

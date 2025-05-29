@@ -8,30 +8,15 @@ import "./globals.css";
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <View className="flex-1 bg-background">
-        <Stack>
-          <Stack.Screen
-            name="index"
-            options={{
-              headerShown: false,
-            }}
-          />
-          {/* <Stack.Screen name="index" options={{ headerShown: false }} /> */}
-          <Stack.Screen
-            name="(tabs)"
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="(auth)"
-            options={{
-              headerShown: false,
-            }}
-          />
-        </Stack>
-        <StatusBar style="auto" />
-      </View>
+      <StatusBar style="light" />
+
+      {/* Background view behind status bar */}
+      <View style={{ height: 40, backgroundColor: "#2563EB" }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(auth)" />
+      </Stack>
     </AuthProvider>
   );
 }
