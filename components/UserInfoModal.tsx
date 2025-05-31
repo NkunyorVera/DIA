@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Speech from "expo-speech";
 import React, { useEffect, useState } from "react";
 import { Alert, Modal, Text, TouchableOpacity, View } from "react-native";
+import RNPickerSelect from "react-native-picker-select";
 import AuthInput from "./AuthInput";
 
 interface UserDetails {
@@ -94,8 +95,8 @@ export default function UserInfoModal({
       <View className="flex-1 justify-center items-center bg-black/40 p-5">
         <View className="bg-white w-full p-8 rounded-xl shadow-lg space-y-4 border border-blue-100">
           <View className="items-center mb-4">
-            <Ionicons name="person-circle-outline" size={32} color="#3B82F6" />
-            <Text className="text-xl font-bold mt-2 text-blue-800">
+            <Ionicons name="person-circle-outline" size={32} color="#9333ea" />
+            <Text className="text-xl font-bold mt-2 text-purple-800">
               Complete Your Profile
             </Text>
           </View>
@@ -115,16 +116,43 @@ export default function UserInfoModal({
             onChangeText={(val) => handleChange("address", val)}
             onFocus={() => handleFocus("Address")}
           />
-          <AuthInput
-            icon="accessibility-outline"
-            placeholder="Disability Type"
-            value={form.disability}
-            onChangeText={(val) => handleChange("disability", val)}
-            onFocus={() => handleFocus("Disability Type")}
+          <RNPickerSelect
+            placeholder={{
+              label: "Select Disability Type",
+              value: "",
+            }}
+            items={[
+              { label: "Visual Impairment", value: "visual" },
+              { label: "Hearing Impairment", value: "hearing" },
+              { label: "Mobility Impairment", value: "mobility" },
+              { label: "Cognitive Impairment", value: "cognitive" },
+              { label: "Other", value: "other" },
+            ]}
+            onValueChange={(value) => handleChange("disability", value)}
+            style={{
+              inputIOS: {
+                fontSize: 16,
+                paddingVertical: 12,
+                paddingHorizontal: 10,
+                borderWidth: 1,
+                borderColor: "#ccc",
+                borderRadius: 4,
+                color: "#000",
+              },
+              inputAndroid: {
+                fontSize: 16,
+                paddingVertical: 12,
+                paddingHorizontal: 10,
+                borderWidth: 1,
+                borderColor: "#ccc",
+                borderRadius: 4,
+                color: "#000",
+              },
+            }}
           />
 
           <TouchableOpacity
-            className="bg-blue-600 py-3 rounded-full mt-4 shadow-md"
+            className="bg-purple-600 py-3 rounded-full mt-4 shadow-md"
             onPress={handleSubmit}
             disabled={submitting}
             onFocus={() => Speech.speak("Submit button", { rate: 0.9 })}
@@ -151,7 +179,7 @@ export default function UserInfoModal({
             onPress={onClose}
             onFocus={() => Speech.speak("Close button", { rate: 0.9 })}
           >
-            <Text className="text-blue-600 text-center">Close</Text>
+            <Text className="text-purple-600 text-center">Close</Text>
           </TouchableOpacity>
         </View>
       </View>

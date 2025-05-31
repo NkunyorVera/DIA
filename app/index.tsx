@@ -44,11 +44,6 @@ const OnboardingScreen: React.FC = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white items-center justify-center relative">
-      <View className="absolute top-10 right-6 z-10">
-        <TouchableOpacity onPress={() => navigate("/signin")}>
-          <Text className="text-blue-800 font-semibold text-lg">Skip</Text>
-        </TouchableOpacity>
-      </View>
       <View className="mb-10 items-center justify-center">
         <Image
           source={require("../assets/logo.png")}
@@ -90,14 +85,14 @@ const OnboardingScreen: React.FC = () => {
           <View
             key={index}
             className={`w-2 h-2 mx-1 rounded-full ${
-              activeIndex === index ? "bg-blue-600" : "bg-blue-200"
+              activeIndex === index ? "bg-purple-600" : "bg-purple-200"
             }`}
           />
         ))}
       </View>
 
       <TouchableOpacity
-        className="mt-8 bg-blue-600 shadow-xl shadow-blue-800  px-10 py-4 rounded-full w-4/5 items-center"
+        className="mt-8 bg-purple-600 shadow-xl shadow-blue-800  px-10 py-4 rounded-full w-4/5 items-center"
         onPress={() =>
           activeIndex === slides.length - 1
             ? navigate("/signin")

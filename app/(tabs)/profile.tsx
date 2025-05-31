@@ -132,13 +132,13 @@ export default function ProfileScreen() {
         <View className="items-center mb-6">
           <Image
             source={{ uri: profileImage }}
-            className="w-28 h-28 rounded-full border-4 border-secondary"
+            className="w-28 h-28 rounded-full border-4 border-purple-300"
           />
           <TouchableOpacity
             onPress={handleChangeProfileImage}
-            className="mt-3 px-4 py-2 bg-orange-100 rounded-full"
+            className="mt-3 px-4 py-2 bg-purple-100 rounded-full"
           >
-            <Text className="text-secondary font-medium">
+            <Text className="text-purple-600 font-medium">
               Change Profile Image
             </Text>
           </TouchableOpacity>
@@ -175,7 +175,7 @@ export default function ProfileScreen() {
 
         <TouchableOpacity
           onPress={handleUpdate}
-          className="mt-6 bg-primary py-3 rounded-xl items-center"
+          className="mt-6 bg-purple-600 py-3 rounded-xl items-center"
         >
           <Text className="text-white font-semibold text-lg">Save Changes</Text>
         </TouchableOpacity>

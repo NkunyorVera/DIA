@@ -11,7 +11,7 @@ export default function RootLayout() {
       <StatusBar style="light" />
 
       {/* Background view behind status bar */}
-      <View style={{ height: 40, backgroundColor: "#2563EB" }} />
+      <View style={{ height: 40, backgroundColor: "#9333ea" }} />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="(tabs)" />

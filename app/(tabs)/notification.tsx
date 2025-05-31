@@ -52,7 +52,7 @@ export default function NotificationScreen() {
       case "alert":
         return <Feather name="alert-triangle" size={20} color="#EF4444" />;
       default:
-        return <Feather name="bell" size={20} color="#3B82F6" />;
+        return <Feather name="bell" size={20} color="#9333ea" />;
     }
   };
 

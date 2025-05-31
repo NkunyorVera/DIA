@@ -132,32 +132,32 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const featureCards = [
   {
     title: "Find Jobs",
-    bgColor: "#E0E7FF",
-    iconColor: "#4F46E5",
+    bgColor: "#E3ECFE",
+    iconColor: "#2A62F3",
     mainIcon: "briefcase-search",
     subIcon: "briefcase",
     route: "/(tabs)/jobs",
   },
   {
     title: "Health Benefits",
-    bgColor: "#DBEAFE",
-    iconColor: "#1D4ED8",
+    bgColor: "#FFE9D9",
+    iconColor: "#FF8C42",
     mainIcon: "hospital-box",
     subIcon: "heartbeat",
     route: null, // Not navigable
   },
   {
     title: "Join Communities",
-    bgColor: "#E0F2FE",
-    iconColor: "#0369A1",
+    bgColor: "#D3F2D8",
+    iconColor: "#2E7D32",
     mainIcon: "account-group",
     subIcon: "users",
     route: "/(tabs)/community",
   },
   {
     title: "Seek Assistance",
-    bgColor: "#EFF6FF",
-    iconColor: "#2563EB",
+    bgColor: "#FFF2C3",
+    iconColor: "#FFC107",
     mainIcon: "hand-heart",
     subIcon: "question-circle",
     route: null, // Not navigable
@@ -238,10 +238,10 @@ export default function HomeScreen(): JSX.Element {
       />
 
       {/* Header */}
-      <View className="bg-blue-600 flex-row justify-between items-center mb-4 p-6">
+      <View className="flex-row justify-between items-center mb-4 p-6">
         {/* Left Side: Logo + Text */}
         <View className="flex-row items-center gap-2.5 justify-center">
-          <View className="bg-blue-100 p-0 rounded-full items-center justify-center">
+          <View className="bg-purple-100 p-0 rounded-full items-center justify-center">
             <Image
               source={require("../../assets/logo.png")}
               resizeMode="contain"
@@ -253,7 +253,7 @@ export default function HomeScreen(): JSX.Element {
 
         {/* Right Side: Mic Button */}
         <TouchableOpacity
-          className="bg-blue-100 p-2 rounded-full"
+          className="bg-purple-100 rounded-full"
           onPress={() =>
             Speech.speak(
               `Welcome ${userName}. Your disability is your unique ability.`,
@@ -261,7 +261,7 @@ export default function HomeScreen(): JSX.Element {
             )
           }
         >
-          <Ionicons name="mic-outline" size={24} color="#3B82F6" />
+          <Ionicons name="mic-outline" size={24} color="#9333ea" />
         </TouchableOpacity>
       </View>
       <ScrollView
@@ -270,10 +270,10 @@ export default function HomeScreen(): JSX.Element {
       >
         {/* Welcome Section */}
         <View className="mb-5">
-          <Text className="text-xl font-bold  leading-snug">
+          <Text className="text-2xl font-bold  leading-snug">
             Welcome back, {userName}
           </Text>
-          <Text className="text-base text-gray-400 mt-2">
+          <Text className="text-base text-gray-500 mt-2">
             Your disability is your unique ability:{" "}
           </Text>
         </View>

@@ -12,10 +12,10 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#2A62F3", // Vibrant primary blue
-        tabBarInactiveTintColor: "#616161", // Soft secondary gray
+        tabBarActiveTintColor: "#facc15", // Vibrant primary blue
+        tabBarInactiveTintColor: "#fff", // Soft secondary gray
         tabBarStyle: {
-          backgroundColor: "#FFFFFF", // Clean white background
+          backgroundColor: "#9333ea", // Clean white background
           borderTopWidth: 1,
           borderTopColor: "#E0E0E0", // Light gray border
           height: 60,
