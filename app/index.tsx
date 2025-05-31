@@ -40,7 +40,7 @@ const OnboardingScreen: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const { session } = useAuth();
 
-  if (session) return <Redirect href={"/(tabs)"} />;
+  if (session) return <Redirect href={"/(tabs)/home"} />;
 
   return (
     <SafeAreaView className="flex-1 bg-white items-center justify-center relative">

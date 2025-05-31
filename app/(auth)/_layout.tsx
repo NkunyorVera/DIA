@@ -1,43 +1,42 @@
-import { Stack } from "expo-router";
-import { navigate } from "expo-router/build/global-state/routing";
+import { Slot } from "expo-router";
 import React from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 
 export default function AuthLayout() {
   return (
-    <Stack>
-      <Stack.Screen
-        name="signin"
-        options={{
+    <>
+      {/* <Stack
+        screenOptions={{
           headerShown: true,
           headerTitle: "",
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => navigate("/")}
-              accessibilityLabel="Back to Sign In"
-              style={{ padding: 10 }}
-            >
-              <Text className="">Back</Text>
-            </TouchableOpacity>
-          ),
+          headerTransparent: true,
+          headerShadowVisible: false,
         }}
-      />
-      <Stack.Screen
-        name="signup"
-        options={{
-          headerShown: true,
-          headerTitle: "",
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => navigate("/signin")}
-              accessibilityLabel="Back to Sign In"
-              style={{ padding: 10 }}
-            >
-              <Text className="">Back</Text>
-            </TouchableOpacity>
-          ),
-        }}
-      />
-    </Stack>
+      >
+        <Stack.Screen
+          name="signin"
+          options={{
+            headerLeft: () => goBack("/"),
+          }}
+        />
+        <Stack.Screen
+          name="signup"
+          options={{
+            headerLeft: () => goBack("/signin"),
+          }}
+        />
+      </Stack> */}
+
+      <SafeAreaView edges={[]} className="flex-1 bg-purple-50">
+        <View className="flex-1 justify-center items-center p-6">
+          <View className="w-full bg-white/90 items-center mb-4 p-8 rounded-lg shadow-lg relative">
+            <Slot />
+          </View>
+        </View>
+        <Toast />
+      </SafeAreaView>
+    </>
   );
 }
