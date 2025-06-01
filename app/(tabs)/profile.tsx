@@ -1,121 +1,123 @@
 import CustomText from "@/components/CustomText";
+import ProfileField from "@/components/ProfileField";
 import { useAuth } from "@/context/AuthContext";
-import { databases, storage } from "@/lib/appwrite";
-import { Feather } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
+import {
+  fetchUserInfo,
+  updateProfile,
+  uploadAndUpdateProfileImage,
+} from "@/lib/appwriteService";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Image,
   ScrollView,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import { ID } from "react-native-appwrite";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
+
+type FormData = {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  disability: string;
+};
 
 export default function ProfileScreen() {
   const { user, signout } = useAuth();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
-    phone: "",
-    address: "",
+    phone: "+1.415.111.0000",
+    address: "San Francisco, CA",
     disability: "",
   });
   const [profileImage, setProfileImage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  const fetchUserInfo = async () => {
+  const loadUserData = async () => {
     try {
-      const res = await databases.getDocument(
-        process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
-        process.env.EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID!,
-        user.$id
-      );
+      setLoading(true);
+      const userData = await fetchUserInfo(user.$id);
       setFormData({
-        name: res.name || "",
-        email: res.email || "",
-        phone: res.phone || "",
-        address: res.address || "",
-        disability: res.disability || "",
+        name: userData.name,
+        email: userData.email,
+        phone: userData.phone,
+        address: userData.address,
+        disability: userData.disability,
       });
-
-      setProfileImage(
-        res.photoUrl || "https://freesvg.org/img/abstract-user-flat-4.png"
-      );
-    } catch (err) {
-      Alert.alert("Error", "Failed to load user info.");
-      console.error(err);
+      setProfileImage(userData?.photoUrl ?? "");
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Failed to load user data",
+        position: "bottom",
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (key: string, value: string) => {
+  const handleChangeProfileImage = async () => {
+    try {
+      const imageUrl = await uploadAndUpdateProfileImage(user.$id);
+      setProfileImage(imageUrl);
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "Profile image updated successfully",
+        position: "bottom",
+      });
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Failed to update profile image",
+        position: "bottom",
+      });
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      setIsUpdating(true);
+      await updateProfile(user.$id, { ...formData, photoUrl: profileImage });
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "Profile updated successfully",
+        position: "bottom",
+      });
+      setIsEditing(false);
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Failed to update profile",
+        position: "bottom",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    loadUserData(); // Reset form with original data
+    setIsEditing(false);
+  };
+
+  const handleChange = (key: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleUpdate = async () => {
-    try {
-      await databases.updateDocument(
-        process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
-        process.env.EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID!,
-
-        user.$id,
-        {
-          ...formData,
-          photoUrl: profileImage,
-        }
-      );
-      Alert.alert("Success", "Profile updated successfully.");
-    } catch (err) {
-      Alert.alert("Error", "Failed to update profile.");
-      console.error(err);
-    }
-  };
-
-  const handleChangeProfileImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert("Permission Denied", "We need permission to access media.");
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      aspect: [1, 1],
-      quality: 0.7,
-    });
-
-    if (!result.canceled && result.assets.length > 0) {
-      try {
-        const file = await storage.createFile(
-          process.env.EXPO_PUBLIC_APPWRITE_STORAGE_ID!,
-          ID.unique(),
-          {
-            uri: result.assets[0].uri,
-            name: "profile.jpg",
-            type: "image/jpeg",
-            size: 0,
-          }
-        );
-        const imageUrl = storage.getFileView(
-          process.env.EXPO_PUBLIC_APPWRITE_STORAGE_ID!,
-          file.$id
-        ).href;
-        setProfileImage(imageUrl);
-      } catch (err) {
-        Alert.alert("Upload Error", "Could not upload image.");
-        console.error(err);
-      }
-    }
-  };
-
   useEffect(() => {
-    fetchUserInfo();
+    loadUserData();
   }, []);
 
   if (loading) {
@@ -128,96 +130,102 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView edges={[]} className="flex-1 bg-white">
-      <ScrollView className="flex-1 bg-white px-6 py-4">
-        <View className="items-center mb-6">
-          <Image
-            source={{ uri: profileImage }}
-            className="w-28 h-28 rounded-full border-4 border-purple-300"
-          />
-          <TouchableOpacity
-            onPress={handleChangeProfileImage}
-            className="mt-3 px-4 py-2 bg-purple-100 rounded-full"
-          >
-            <CustomText className="text-purple-600 font-medium">
-              Change Profile Image
-            </CustomText>
+      <View className="flex-row justify-between items-center px-6 py-4 border-b border-gray-200">
+        <TouchableOpacity
+          onPress={isEditing ? handleCancelEdit : () => setIsEditing(true)}
+        >
+          <CustomText className="text-purple-600 font-medium">
+            {isEditing ? "Cancel" : "Edit Profile"}
+          </CustomText>
+        </TouchableOpacity>
+
+        <CustomText className="text-lg font-bold">Profile</CustomText>
+
+        {isEditing ? (
+          <TouchableOpacity onPress={handleSaveProfile} disabled={isUpdating}>
+            {isUpdating ? (
+              <ActivityIndicator size="small" color="#9333ea" />
+            ) : (
+              <CustomText className="text-purple-600 font-medium">
+                Save
+              </CustomText>
+            )}
           </TouchableOpacity>
+        ) : (
+          <View style={{ width: 60 }} /> // Spacer for alignment
+        )}
+      </View>
+
+      <ScrollView
+        className="flex-1 bg-white px-6 py-4"
+        keyboardShouldPersistTaps="handled"
+      >
+        <View className="items-center mb-8 relative">
+          <View className="relative w-24 h-24">
+            <Image
+              source={{ uri: profileImage }}
+              className="w-24 h-24 rounded-full border-4 border-purple-300 mb-4"
+            />
+            {isEditing && (
+              <TouchableOpacity
+                onPress={handleChangeProfileImage}
+                className="absolute bottom-0 right-0 bg-purple-100 rounded-full p-2"
+              >
+                <Ionicons name="camera-outline" size={20} color="#9333ea" />
+              </TouchableOpacity>
+            )}
+          </View>
+          <CustomText className="text-2xl font-bold">
+            {formData.name}
+          </CustomText>
+          <CustomText className="text-gray-500">{formData.email}</CustomText>
         </View>
 
-        <View className="space-y-4">
-          <InputField
+        <View className="mb-6 gap-4">
+          <ProfileField
             label="Name"
             value={formData.name}
+            isEditing={isEditing}
             onChangeText={(text) => handleChange("name", text)}
           />
-          <InputField
+          <ProfileField
             label="Email"
             value={formData.email}
-            onChangeText={(text) => handleChange("email", text)}
-            editable={false}
+            isEditing={isEditing}
+            editable={false} // Email typically shouldn't be editable
           />
-          <InputField
+          <ProfileField
             label="Phone"
             value={formData.phone}
+            isEditing={isEditing}
             onChangeText={(text) => handleChange("phone", text)}
           />
-          <InputField
+          <ProfileField
             label="Address"
             value={formData.address}
+            isEditing={isEditing}
             onChangeText={(text) => handleChange("address", text)}
           />
-          <InputField
+          <ProfileField
             label="Disability"
             value={formData.disability}
+            isEditing={isEditing}
             onChangeText={(text) => handleChange("disability", text)}
           />
         </View>
 
-        <TouchableOpacity
-          onPress={handleUpdate}
-          className="mt-6 bg-purple-600 py-3 rounded-xl items-center"
-        >
-          <CustomText className="text-white font-semibold text-lg">
-            Save Changes
-          </CustomText>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={signout}
-          className="mt-4 bg-red-100 py-3 rounded-xl items-center flex-row justify-center"
-        >
-          <Feather name="log-out" size={20} color="#DC2626" />
-          <CustomText className="ml-2 text-red-600 font-semibold text-base">
-            Logout
-          </CustomText>
-        </TouchableOpacity>
+        {!isEditing && (
+          <TouchableOpacity
+            onPress={signout}
+            className="mt-8 border border-red-500 py-3 rounded-xl items-center flex-row justify-center"
+          >
+            <Feather name="log-out" size={20} color="#DC2626" />
+            <CustomText className="ml-2 text-red-600 font-semibold text-base">
+              Logout
+            </CustomText>
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </SafeAreaView>
-  );
-}
-
-function InputField({
-  label,
-  value,
-  onChangeText,
-  editable = true,
-}: {
-  label: string;
-  value: string;
-  onChangeText: (text: string) => void;
-  editable?: boolean;
-}) {
-  return (
-    <View>
-      <CustomText className="text-sm text-gray-500 mb-1">{label}</CustomText>
-      <TextInput
-        className="border border-gray-300 rounded-xl font-sans px-4 py-3 text-gray-800"
-        value={value}
-        onChangeText={onChangeText}
-        editable={editable}
-        placeholder={`Enter your ${label.toLowerCase()}`}
-        placeholderTextColor="#9CA3AF"
-      />
-    </View>
   );
 }

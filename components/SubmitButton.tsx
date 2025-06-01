@@ -21,7 +21,7 @@ const SubmitButton: React.FC<Props> = ({
     if (loading) {
       const interval = setInterval(() => {
         setEllipseIndex((prev) => (prev + 1) % 3);
-      }, 500);
+      }, 200);
       return () => clearInterval(interval);
     }
   }, [loading]);

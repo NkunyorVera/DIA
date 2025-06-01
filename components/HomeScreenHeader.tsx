@@ -11,7 +11,7 @@ const HomeScreenHeader = ({ userName }: { userName: string }) => {
       <View className="flex-row items-center gap-2.5 justify-center">
         <View className="bg-purple-100 p-0 rounded-full items-center justify-center">
           <Image
-            source={require("../../assets/logo.png")}
+            source={require("../assets/logo.png")}
             resizeMode="contain"
             style={{ width: 48, height: 48 }}
           />

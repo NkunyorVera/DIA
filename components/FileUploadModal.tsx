@@ -1,5 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
-import { updateFileUrl, uploadFile } from "@/lib/appwriteService";
+import { uploadAndUpdateProfileImage } from "@/lib/appwriteService";
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import { Image, Modal, TouchableOpacity, View } from "react-native";
@@ -10,103 +10,133 @@ import SubmitButton from "./SubmitButton";
 interface PhotoModalProps {
   visible: boolean;
   onClose: () => void;
+  onImageUpdate?: (imageUrl: string) => void;
 }
 
-export default function ProfileImageModal({
+export default function FileUploadModal({
   visible,
   onClose,
+  onImageUpdate,
 }: PhotoModalProps) {
-  const [image, setImage] = useState<string | null>(null);
   const { user } = useAuth();
-  const [loading, setloading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const pickImage = async () => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissionResult.granted) {
-      alert("Permission to access camera roll is required!");
-      return;
-    }
+    try {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        Toast.show({
+          type: "error",
+          text1: "Permission required",
+          text2: "Please enable photo library access in settings",
+          position: "bottom",
+        });
+        return;
+      }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8, // Slightly reduced quality for better performance
+      });
 
-    if (!result.canceled && result.assets.length > 0) {
-      setImage(result.assets[0].uri);
+      if (!result.canceled && result.assets[0]?.uri) {
+        setSelectedImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Failed to select image",
+        position: "bottom",
+      });
     }
   };
 
-  const handleProfileImageSubmit = async (file: any): Promise<void> => {
-    setloading(true);
-    const formattedFile = {
-      uri: file.uri,
-      name: file.name || "profile.jpg",
-      type: file.type || "image/jpeg",
-      size: file.size || 0,
-    };
-    const imageId = await uploadFile(
-      formattedFile,
-      (error: string) =>
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: error,
-        }),
-      () =>
-        Toast.show({
-          type: "success",
-          text1: "Success",
-          text2: "Profile updated successfully!",
-        })
-    );
-    if (imageId) {
-      await updateFileUrl(user.$id, imageId, "photoUrl");
+  const handleImageSubmit = async () => {
+    if (!selectedImage) {
+      Toast.show({
+        type: "error",
+        text1: "No image selected",
+        text2: "Please select an image first",
+        position: "bottom",
+      });
+      return;
     }
-    setloading(false);
+
+    try {
+      setIsLoading(true);
+      const imageUrl = await uploadAndUpdateProfileImage(user.$id);
+
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "Profile image updated!",
+        position: "bottom",
+      });
+
+      onImageUpdate?.(imageUrl);
+      onClose();
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Upload failed",
+        text2: "Could not update profile image",
+        position: "bottom",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent
       visible={visible}
       onRequestClose={onClose}
     >
-      <View className="flex-1 justify-center items-center bg-black/40 p-5">
-        <View className="bg-white w-full p-6 rounded-xl shadow space-y-4 items-center">
-          <CustomText className="text-lg font-semibold mb-4 text-center">
-            Add Disability Card
+      <View className="flex-1 justify-center items-center bg-black/70 p-5">
+        <View className="bg-white w-full max-w-md p-6 rounded-xl space-y-4">
+          <CustomText className="text-xl font-bold text-center mb-4">
+            Update Profile Photo
           </CustomText>
 
-          {image && (
-            <Image
-              source={{ uri: image }}
-              style={{ width: 100, height: 100, borderRadius: 50 }}
-              className="mb-5"
-            />
+          {selectedImage && (
+            <View className="items-center mb-4">
+              <Image
+                source={{ uri: selectedImage }}
+                className="w-32 h-32 rounded-full border-2 border-purple-200"
+                resizeMode="cover"
+              />
+            </View>
           )}
 
           <TouchableOpacity
-            className="border-2 border-purple-600 py-2.5 px-7 rounded-full mb-1"
+            className="border-2 border-purple-600 py-3 px-6 rounded-full items-center mb-4"
             onPress={pickImage}
+            disabled={isLoading}
           >
-            <CustomText className="text-purple-600 font-sans">
-              Pick Image
+            <CustomText className="text-purple-600 font-medium">
+              {selectedImage ? "Change Image" : "Select Image"}
             </CustomText>
           </TouchableOpacity>
 
           <SubmitButton
-            loading={false}
-            handleClick={() => handleProfileImageSubmit}
-            label="Submit"
+            loading={isLoading}
+            handleClick={handleImageSubmit}
+            label="Update Profile"
           />
 
-          <TouchableOpacity onPress={onClose}>
-            <CustomText className="text-gray-600 mt-5">Skip</CustomText>
+          <TouchableOpacity
+            onPress={onClose}
+            className="items-center mt-2"
+            disabled={isLoading}
+          >
+            <CustomText className="text-gray-500">Cancel</CustomText>
           </TouchableOpacity>
         </View>
       </View>

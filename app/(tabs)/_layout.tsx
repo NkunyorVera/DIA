@@ -64,9 +64,9 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="chats"
+        name="community"
         options={{
-          title: "Chats",
+          title: "Community",
           tabBarLabelStyle: {
             fontSize: 10,
             fontWeight: "400",
@@ -90,7 +90,7 @@ export default function TabsLayout() {
 
       {/* Hidden screens - removed from tab bar completely */}
       <Tabs.Screen
-        name="community"
+        name="chats"
         options={{
           href: null, // This completely removes it from the tab bar
         }}

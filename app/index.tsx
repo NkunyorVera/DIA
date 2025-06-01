@@ -121,7 +121,13 @@ import { appGuide, stopGuide } from "@/lib/speech";
 import { Redirect } from "expo-router";
 import { navigate } from "expo-router/build/global-state/routing";
 import React, { useEffect, useRef, useState } from "react";
-import { Dimensions, Image, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -158,7 +164,7 @@ const slides: Slide[] = [
 const OnboardingScreen: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const carouselRef = useRef<React.ElementRef<typeof Carousel>>(null);
-  const { session } = useAuth();
+  const { session, loading } = useAuth();
 
   useEffect(() => {
     appGuide("Welcome to our inclusive app. Let's take a quick tour.");
@@ -168,6 +174,10 @@ const OnboardingScreen: React.FC = () => {
   }, [activeIndex]);
 
   if (session) return <Redirect href="/(tabs)/home" />;
+  if (loading)
+    return (
+      <ActivityIndicator size="large" color="#9333ea" style={{ flex: 1 }} />
+    );
 
   const handleNext = () => {
     if (activeIndex === slides.length - 1) {

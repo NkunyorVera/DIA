@@ -42,7 +42,7 @@ export default function FindJobsScreen() {
                 className="bg-white p-5 rounded-2xl shadow-sm border border-blue-100"
               >
                 {/* Time */}
-                <CustomText className="text-purple-500 text-xs mb-2">
+                <CustomText className="text-gray-500 text-xs mb-2">
                   4 days ago
                 </CustomText>
 
@@ -55,7 +55,7 @@ export default function FindJobsScreen() {
                     <CustomText className="text-purple-800 text-lg font-semibold">
                       ACC. Tech
                     </CustomText>
-                    <CustomText className="text-purple-600 text-sm">
+                    <CustomText className="text-gray-600 text-sm">
                       Customer Support role
                     </CustomText>
                   </View>
