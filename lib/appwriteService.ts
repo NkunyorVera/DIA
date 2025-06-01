@@ -163,14 +163,11 @@ export const uploadAndUpdateProfileImage = async (
 
       // Get the file view URL
       const imageUrl = storage.getFileView(STORAGE_ID, fileId).href;
-      console.log("Image uploaded successfully:", imageUrl);
-
       // Update profile with new image URL
       await updateProfile(userId, { photoUrl: String(imageUrl) });
 
       return imageUrl;
     } catch (error) {
-      console.error("Image upload failed:", error);
       throw new Error("Image upload and update failed");
     }
   }
