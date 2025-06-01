@@ -53,11 +53,12 @@ export default function ProfileScreen() {
       });
       setProfileImage(userData?.photoUrl ?? "");
     } catch (error) {
+      console.error("Error loading user data:", error);
       Toast.show({
         type: "error",
         text1: "Error",
         text2: "Failed to load user data",
-        position: "bottom",
+        position: "top",
       });
     } finally {
       setLoading(false);
@@ -72,14 +73,14 @@ export default function ProfileScreen() {
         type: "success",
         text1: "Success",
         text2: "Profile image updated successfully",
-        position: "bottom",
+        position: "top",
       });
     } catch (error) {
       Toast.show({
         type: "error",
         text1: "Error",
         text2: "Failed to update profile image",
-        position: "bottom",
+        position: "top",
       });
     }
   };
@@ -92,7 +93,7 @@ export default function ProfileScreen() {
         type: "success",
         text1: "Success",
         text2: "Profile updated successfully",
-        position: "bottom",
+        position: "top",
       });
       setIsEditing(false);
     } catch (error) {
@@ -100,7 +101,7 @@ export default function ProfileScreen() {
         type: "error",
         text1: "Error",
         text2: "Failed to update profile",
-        position: "bottom",
+        position: "top",
       });
     } finally {
       setIsUpdating(false);
@@ -157,15 +158,23 @@ export default function ProfileScreen() {
       </View>
 
       <ScrollView
-        className="flex-1 bg-white px-6 py-4"
+        className="flex-1 bg-white px-12 py-4"
         keyboardShouldPersistTaps="handled"
       >
         <View className="items-center mb-8 relative">
           <View className="relative w-24 h-24">
-            <Image
-              source={{ uri: profileImage }}
-              className="w-24 h-24 rounded-full border-4 border-purple-300 mb-4"
-            />
+            {profileImage === "" ? (
+              <Image
+                source={require("@/assets/profile.png")}
+                resizeMode="cover"
+                className="w-24 h-24 rounded-full border-4 border-purple-300 mb-4"
+              />
+            ) : (
+              <Image
+                source={{ uri: profileImage }}
+                className="w-24 h-24 rounded-full border-4 border-purple-300 mb-4"
+              />
+            )}
             {isEditing && (
               <TouchableOpacity
                 onPress={handleChangeProfileImage}
@@ -217,7 +226,7 @@ export default function ProfileScreen() {
         {!isEditing && (
           <TouchableOpacity
             onPress={signout}
-            className="mt-8 border border-red-500 py-3 rounded-xl items-center flex-row justify-center"
+            className="my-8 border border-red-500 py-3 rounded-xl items-center flex-row justify-center"
           >
             <Feather name="log-out" size={20} color="#DC2626" />
             <CustomText className="ml-2 text-red-600 font-semibold text-base">

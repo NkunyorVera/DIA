@@ -22,14 +22,14 @@ function ProfileField({
       <CustomText className="text-purple-500 text-sm mb-1">{label}</CustomText>
       {isEditing && editable ? (
         <TextInput
-          className="text-gray-800 text-base py-1"
+          className="text-gray-500 text-base py-1"
           value={value}
           onChangeText={onChangeText}
           placeholder={`Enter ${label.toLowerCase()}`}
           placeholderTextColor="#9CA3AF"
         />
       ) : (
-        <CustomText className="text-gray-600">{value}</CustomText>
+        <CustomText className="text-gray-500">{value}</CustomText>
       )}
     </View>
   );

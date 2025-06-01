@@ -1,4 +1,5 @@
 import { AuthProvider } from "@/context/AuthContext";
+import { toastConfig } from "@/lib/toast";
 import * as Font from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -41,7 +42,7 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="(auth)" />
       </Stack>
-      <Toast />
+      <Toast config={toastConfig} />
     </AuthProvider>
   );
 }

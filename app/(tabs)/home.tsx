@@ -4,11 +4,11 @@ import FileUploadModal from "@/components/FileUploadModal";
 import HomeScreenHeader from "@/components/HomeScreenHeader";
 import UserInfoModal from "@/components/UserInfoModal";
 import { useAuth } from "@/context/AuthContext";
-import { databases } from "@/lib/appwrite";
+import { fetchUserInfo } from "@/lib/appwriteService";
 import React, { JSX, useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
-import { Query } from "react-native-appwrite";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 
 export default function HomeScreen(): JSX.Element {
   const { user } = useAuth();
@@ -17,26 +17,26 @@ export default function HomeScreen(): JSX.Element {
     useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
-  const checkUserProfile = async (): Promise<void> => {
-    try {
-      const res = await databases.listDocuments(
-        process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
-        process.env.EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID!,
-        [Query.equal("userId", user?.$id)]
-      );
-
-      if (res.total === 0) {
-        setShowUserInfoModal(true);
-      }
-
-      setCurrentUser(res.documents[0]);
-    } catch (err) {
-      console.error("Error checking user profile:", err);
-    }
-  };
-
   useEffect(() => {
-    if (user?.$id) checkUserProfile();
+    if (user?.$id) {
+      fetchUserInfo(user.$id)
+        .then((userInfo) => {
+          setCurrentUser(userInfo);
+          if (!userInfo?.disability || !userInfo?.phone) {
+            setShowUserInfoModal(true);
+          }
+        })
+        .catch((error) => {
+          Toast.show({
+            type: "error",
+            text1: "Error fetching user info",
+            text2: "Please try again later.",
+            position: "top",
+          });
+          console.error("Error fetching user info:", error);
+          setShowUserInfoModal(true);
+        });
+    }
     // Welcome message when screen loads
     // Speech.speak(
     //   `Welcome to your dashboard ${

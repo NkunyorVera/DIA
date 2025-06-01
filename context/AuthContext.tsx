@@ -35,9 +35,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setUser(responseUser);
         }
       } catch (error) {
-        if (error instanceof AppwriteException) {
-          Alert.alert("Error", ` ${error.cause || error.message}`);
-        }
         setSession(null);
         setUser(null);
       } finally {

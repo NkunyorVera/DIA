@@ -173,11 +173,11 @@ const OnboardingScreen: React.FC = () => {
     };
   }, [activeIndex]);
 
-  if (session) return <Redirect href="/(tabs)/home" />;
   if (loading)
     return (
       <ActivityIndicator size="large" color="#9333ea" style={{ flex: 1 }} />
     );
+  if (session) return <Redirect href="/(tabs)/home" />;
 
   const handleNext = () => {
     if (activeIndex === slides.length - 1) {

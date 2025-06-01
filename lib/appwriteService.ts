@@ -104,8 +104,7 @@ export const fetchUserInfo = async (userId: string): Promise<UserProfile> => {
       phone: res.phone || "+1.415.111.0000",
       address: res.address || "San Francisco, CA",
       disability: res.disability || "",
-      photoUrl:
-        res.photoUrl || "https://freesvg.org/img/abstract-user-flat-4.png",
+      photoUrl: res.photoUrl,
     };
   } catch (error) {
     handleAppwriteError(error, "Failed to fetch user profile");
