@@ -1,6 +1,7 @@
+import CustomText from "@/components/CustomText";
 import { account } from "@/lib/appwrite";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Alert, SafeAreaView, Text } from "react-native";
+import { Alert, SafeAreaView } from "react-native";
 import { AppwriteException } from "react-native-appwrite";
 
 type AuthContextType = {
@@ -83,7 +84,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     >
       {loading ? (
         <SafeAreaView className="flex-1 items-center justify-center">
-          <Text className="text-2xl text-primary font-bold">Loading...</Text>
+          <CustomText className="text-2xl text-primary font-bold">
+            Loading...
+          </CustomText>
         </SafeAreaView>
       ) : (
         children

@@ -1,6 +1,7 @@
+import CustomText from "@/components/CustomText";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function FindJobsScreen() {
@@ -9,10 +10,12 @@ export default function FindJobsScreen() {
       <View className="flex-1 bg-purple-50">
         {/* Header */}
         <View className="bg-purple-600 px-6 py-5 rounded-b-3xl">
-          <Text className="text-white text-3xl font-bold">Find Jobs</Text>
-          <Text className="text-purple-100 mt-1 text-base">
+          <CustomText className="text-white text-3xl font-bold">
+            Find Jobs
+          </CustomText>
+          <CustomText className="text-purple-100 mt-1 text-base">
             For your ability
-          </Text>
+          </CustomText>
         </View>
 
         {/* Content */}
@@ -20,14 +23,14 @@ export default function FindJobsScreen() {
           {/* Categories */}
           <View className="flex-row space-x-3 mb-6">
             <TouchableOpacity className="bg-purple-600 px-5 py-2.5 rounded-full">
-              <Text className="text-white font-medium text-sm">
+              <CustomText className="text-white font-medium text-sm">
                 Recommended
-              </Text>
+              </CustomText>
             </TouchableOpacity>
             <TouchableOpacity className="bg-purple-100 px-5 py-2.5 rounded-full">
-              <Text className="text-purple-800 font-medium text-sm">
+              <CustomText className="text-purple-800 font-medium text-sm">
                 Trending
-              </Text>
+              </CustomText>
             </TouchableOpacity>
           </View>
 
@@ -39,7 +42,9 @@ export default function FindJobsScreen() {
                 className="bg-white p-5 rounded-2xl shadow-sm border border-blue-100"
               >
                 {/* Time */}
-                <Text className="text-purple-500 text-xs mb-2">4 days ago</Text>
+                <CustomText className="text-purple-500 text-xs mb-2">
+                  4 days ago
+                </CustomText>
 
                 {/* Job Info */}
                 <View className="flex-row items-start mb-4">
@@ -47,20 +52,20 @@ export default function FindJobsScreen() {
                     <Ionicons name="briefcase" size={20} color="#9333ea" />
                   </View>
                   <View className="flex-1">
-                    <Text className="text-purple-800 text-lg font-semibold">
+                    <CustomText className="text-purple-800 text-lg font-semibold">
                       ACC. Tech
-                    </Text>
-                    <Text className="text-purple-600 text-sm">
+                    </CustomText>
+                    <CustomText className="text-purple-600 text-sm">
                       Customer Support role
-                    </Text>
+                    </CustomText>
                   </View>
                 </View>
 
                 {/* Apply Button */}
                 <TouchableOpacity className="bg-purple-600 py-2.5 rounded-xl">
-                  <Text className="text-white text-center font-medium text-sm">
+                  <CustomText className="text-white text-center font-medium text-sm">
                     Apply Now
-                  </Text>
+                  </CustomText>
                 </TouchableOpacity>
               </View>
             ))}

@@ -5,7 +5,8 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
+import CustomText from "./CustomText";
 
 interface FeatureCardProps {
   title: string;
@@ -38,7 +39,9 @@ export default function FeatureCard({
         <View className="w-16 h-16 rounded-full bg-white mb-2 justify-center items-center">
           <MaterialCommunityIcons name={mainIcon} size={32} color={iconColor} />
         </View>
-        <Text className="text-text-primary font-bold text-lg">{title}</Text>
+        <CustomText className="text-text-primary font-bold text-lg">
+          {title}
+        </CustomText>
         <FontAwesome
           name={subIcon}
           size={20}

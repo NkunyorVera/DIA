@@ -1,12 +1,7 @@
+import CustomText from "@/components/CustomText";
 import { Feather } from "@expo/vector-icons";
 import React, { useState } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const notificationsMock = [
@@ -59,13 +54,13 @@ export default function NotificationScreen() {
   return (
     <SafeAreaView edges={[]} className="flex-1 bg-white">
       <ScrollView className="flex-1 bg-white px-6 pt-8">
-        <Text className="text-2xl font-bold mb-6 text-gray-800">
+        <CustomText className="text-2xl font-bold mb-6 text-gray-800">
           Notifications
-        </Text>
+        </CustomText>
         {notifications.length === 0 ? (
-          <Text className="text-gray-500 text-center mt-20">
+          <CustomText className="text-gray-500 text-center mt-20">
             No notifications
-          </Text>
+          </CustomText>
         ) : (
           notifications.map((notification) => (
             <TouchableOpacity
@@ -77,15 +72,15 @@ export default function NotificationScreen() {
             >
               <View className="mt-1 mr-3">{getIcon(notification.type)}</View>
               <View className="flex-1">
-                <Text className="font-semibold text-base text-gray-800">
+                <CustomText className="font-semibold text-base text-gray-800">
                   {notification.title}
-                </Text>
-                <Text className="text-sm text-gray-600 mt-1">
+                </CustomText>
+                <CustomText className="text-sm text-gray-600 mt-1">
                   {notification.body}
-                </Text>
-                <Text className="text-xs text-gray-400 mt-2">
+                </CustomText>
+                <CustomText className="text-xs text-gray-400 mt-2">
                   {notification.time}
-                </Text>
+                </CustomText>
               </View>
               {!notification.read && <View style={styles.unreadDot} />}
             </TouchableOpacity>

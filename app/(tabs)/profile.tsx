@@ -1,3 +1,4 @@
+import CustomText from "@/components/CustomText";
 import { useAuth } from "@/context/AuthContext";
 import { databases, storage } from "@/lib/appwrite";
 import { Feather } from "@expo/vector-icons";
@@ -8,7 +9,6 @@ import {
   Alert,
   Image,
   ScrollView,
-  Text,
   TextInput,
   TouchableOpacity,
   View,
@@ -138,9 +138,9 @@ export default function ProfileScreen() {
             onPress={handleChangeProfileImage}
             className="mt-3 px-4 py-2 bg-purple-100 rounded-full"
           >
-            <Text className="text-purple-600 font-medium">
+            <CustomText className="text-purple-600 font-medium">
               Change Profile Image
-            </Text>
+            </CustomText>
           </TouchableOpacity>
         </View>
 
@@ -177,7 +177,9 @@ export default function ProfileScreen() {
           onPress={handleUpdate}
           className="mt-6 bg-purple-600 py-3 rounded-xl items-center"
         >
-          <Text className="text-white font-semibold text-lg">Save Changes</Text>
+          <CustomText className="text-white font-semibold text-lg">
+            Save Changes
+          </CustomText>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -185,9 +187,9 @@ export default function ProfileScreen() {
           className="mt-4 bg-red-100 py-3 rounded-xl items-center flex-row justify-center"
         >
           <Feather name="log-out" size={20} color="#DC2626" />
-          <Text className="ml-2 text-red-600 font-semibold text-base">
+          <CustomText className="ml-2 text-red-600 font-semibold text-base">
             Logout
-          </Text>
+          </CustomText>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -207,9 +209,9 @@ function InputField({
 }) {
   return (
     <View>
-      <Text className="text-sm text-gray-500 mb-1">{label}</Text>
+      <CustomText className="text-sm text-gray-500 mb-1">{label}</CustomText>
       <TextInput
-        className="border border-gray-300 rounded-xl px-4 py-3 text-gray-800"
+        className="border border-gray-300 rounded-xl font-sans px-4 py-3 text-gray-800"
         value={value}
         onChangeText={onChangeText}
         editable={editable}

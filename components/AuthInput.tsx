@@ -29,7 +29,7 @@ export default function AuthInput({
       <Ionicons name={icon} size={18} color="#6B7280" className="mr-2" />
       <TextInput
         placeholder={placeholder}
-        className="flex-1 py-2 text-base text-gray-800"
+        className="flex-1 py-2 font-sans text-base text-gray-800"
         value={value}
         onChangeText={onChangeText}
         secureTextEntry={isPasswordField && !isPasswordVisible}

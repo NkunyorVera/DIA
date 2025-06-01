@@ -22,3 +22,5 @@ export const appGuide = (sentence: string) => {
     ...(africanVoice && { voice: africanVoice }),
   });
 };
+
+export const stopGuide = () => Speech.stop();

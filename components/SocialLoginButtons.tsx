@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
+import CustomText from "./CustomText";
 
 export default function SocialLoginButtons({
   onGoogle,
@@ -21,7 +22,9 @@ export default function SocialLoginButtons({
           color="#EA4335"
           className="mr-2"
         />
-        <Text className="text-base font-medium">Sign in with Google</Text>
+        <CustomText className="text-base font-medium">
+          Sign in with Google
+        </CustomText>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -34,9 +37,9 @@ export default function SocialLoginButtons({
           color="#fff"
           className="mr-2"
         />
-        <Text className="text-white text-base font-medium">
+        <CustomText className="text-white text-base font-medium">
           Sign in with Facebook
-        </Text>
+        </CustomText>
       </TouchableOpacity>
     </View>
   );

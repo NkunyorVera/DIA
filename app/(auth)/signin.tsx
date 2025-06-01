@@ -1,15 +1,15 @@
 // app/(auth)/signin.tsx
 import AuthInput from "@/components/AuthInput";
+import CustomText from "@/components/CustomText";
 import GoBack from "@/components/GoBack";
 import MicButton from "@/components/MicButton";
 import SubmitButton from "@/components/SubmitButton";
 import { useAuth } from "@/context/AuthContext";
 import { signin } from "@/lib/authService";
-import { appGuide } from "@/lib/speech";
+import { appGuide, stopGuide } from "@/lib/speech";
 import { Link } from "expo-router";
-import * as Speech from "expo-speech";
 import React, { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import Toast from "react-native-toast-message";
 
 export default function SignInScreen() {
@@ -34,7 +34,7 @@ export default function SignInScreen() {
       "Welcome to the login screen. Please enter your email and password to continue."
     );
     return () => {
-      Speech.stop();
+      stopGuide();
     };
   }, []);
 
@@ -43,7 +43,7 @@ export default function SignInScreen() {
   };
 
   const handleFocus = (fieldName: string) => {
-    Speech.speak(fieldName, { rate: 0.9 });
+    appGuide(fieldName);
   };
 
   return (
@@ -51,9 +51,9 @@ export default function SignInScreen() {
       <GoBack to="/" />
       <View className="flex items-center">
         <MicButton message="Welcome to the login screen. Please enter your email and password to continue." />
-        <Text className="text-2xl text-purple-600 font-semibold mt-2 mb-4">
+        <CustomText className="text-2xl text-purple-600 font-semibold mt-2 mb-4">
           Login
-        </Text>
+        </CustomText>
       </View>
       <AuthInput
         icon="mail-outline"
@@ -77,17 +77,17 @@ export default function SignInScreen() {
         handleClick={handleSignin}
       />
 
-      <Text className="mt-3 text-gray-600">
+      <CustomText className="mt-3 font-sans text-gray-600">
         Don't have an account?
         <Link
           className="text-purple-600 underline"
           href="/signup"
-          onAccessibilityTap={() => Speech.speak("Sign up link", { rate: 0.9 })}
+          onAccessibilityTap={() => appGuide("Sign up link")}
         >
           {" "}
           Sign Up
         </Link>
-      </Text>
+      </CustomText>
     </>
   );
 }

@@ -1,16 +1,16 @@
 // app/(auth)/signup.tsx
 import AuthInput from "@/components/AuthInput";
+import CustomText from "@/components/CustomText";
 import GoBack from "@/components/GoBack";
 import SubmitButton from "@/components/SubmitButton";
 import { useAuth } from "@/context/AuthContext";
 import { signup } from "@/lib/authService";
-import { appGuide } from "@/lib/speech";
+import { appGuide, stopGuide } from "@/lib/speech";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { navigate } from "expo-router/build/global-state/routing";
-import * as Speech from "expo-speech";
 import React, { useEffect, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 
 export default function SignUpScreen() {
@@ -26,7 +26,7 @@ export default function SignUpScreen() {
   useEffect(() => {
     appGuide("Sign up screen. Please enter your details to create an account.");
     return () => {
-      Speech.stop();
+      stopGuide();
     };
   }, []);
 
@@ -65,9 +65,9 @@ export default function SignUpScreen() {
         >
           <Ionicons name="mic-outline" size={24} color="#9333ea" />
         </TouchableOpacity>
-        <Text className="text-2xl text-purple-600 font-semibold mt-2">
+        <CustomText className="text-2xl text-purple-600 font-semibold mt-2">
           Create Account
-        </Text>
+        </CustomText>
       </View>
 
       <AuthInput
@@ -98,16 +98,16 @@ export default function SignUpScreen() {
         label="Create Account"
         loading={loading}
       />
-      <Text className="text-center text-gray-600 mt-3">
+      <CustomText className="text-center text-gray-600 mt-3">
         Already have an account?{" "}
         <Link
           className="text-purple-600 underline"
           href="/signin"
-          onAccessibilityTap={() => Speech.speak("Login link", { rate: 0.9 })}
+          onAccessibilityTap={() => appGuide("Login link")}
         >
           Login
         </Link>
-      </Text>
+      </CustomText>
     </>
   );
 }

@@ -3,6 +3,7 @@ module.exports = {
   // NOTE: Update this to include the paths to all of your component files.
   content: [
     "./app/**/*.{js,jsx,ts,tsx}",
+    "./app/*.{js,jsx,ts,tsx}",
     "./components/**/*.{js,jsx,ts,tsx}",
     "./components/*.{js,jsx,ts,tsx}",
   ],
@@ -39,6 +40,12 @@ module.exports = {
         success: {
           DEFAULT: "#2E7D32", // Calming Green
         },
+      },
+      fontFamily: {
+        sans: ["Lexend", "sans-serif"], // This makes Lexend the default
+        normal: ["Lexend-Regular", "sans-serif"], // This makes Lexend the default
+        bold: ["Lexend-Bold", "sans-serif"],
+        semibold: ["Lexend-SemiBold", "sans-serif"],
       },
     },
   },
