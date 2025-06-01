@@ -39,6 +39,7 @@ export default function ProfileScreen() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   const loadUserData = async () => {
     try {
@@ -67,6 +68,7 @@ export default function ProfileScreen() {
 
   const handleChangeProfileImage = async () => {
     try {
+      setIsUploadingImage(true);
       const imageUrl = await uploadAndUpdateProfileImage(user.$id);
       setProfileImage(imageUrl);
       Toast.show({
@@ -82,6 +84,8 @@ export default function ProfileScreen() {
         text2: "Failed to update profile image",
         position: "top",
       });
+    } finally {
+      setIsUploadingImage(false);
     }
   };
 
@@ -162,8 +166,14 @@ export default function ProfileScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View className="items-center mb-8 relative">
-          <View className="relative w-24 h-24">
-            {profileImage === "" ? (
+          <View className="relative rounded-full bg-purple-200 w-24 h-24">
+            {isUploadingImage ? (
+              <ActivityIndicator
+                size="small"
+                color="#9333ea"
+                className="absolute inset-0 flex items-center justify-center"
+              />
+            ) : profileImage === "" ? (
               <Image
                 source={require("@/assets/profile.png")}
                 resizeMode="cover"
@@ -175,6 +185,7 @@ export default function ProfileScreen() {
                 className="w-24 h-24 rounded-full border-4 border-purple-300 mb-4"
               />
             )}
+
             {isEditing && (
               <TouchableOpacity
                 onPress={handleChangeProfileImage}
