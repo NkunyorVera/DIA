@@ -1,5 +1,5 @@
-import { useAuth } from "@/context/AuthContext";
-import { createUserProfile } from "@/lib/appwriteService";
+import { useGlobalContext } from "@/context/GlobalProvider";
+import { updateUser } from "@/lib/appwite_utility";
 import { appGuide, stopGuide } from "@/lib/speech";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
@@ -51,7 +51,7 @@ export default function UserInfoModal({
     disability: "",
   });
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const { user } = useAuth();
+  const { user } = useGlobalContext();
 
   // Announce when modal opens
   useEffect(() => {
@@ -87,10 +87,7 @@ export default function UserInfoModal({
     setSubmitting(true);
 
     try {
-      await createUserProfile({
-        userId: user?.$id!,
-        email: user?.email!,
-        name: user?.name!,
+      await updateUser(user.$id, {
         phone,
         address,
         disability,

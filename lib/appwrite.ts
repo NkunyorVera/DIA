@@ -1,5 +1,11 @@
 import { Platform } from "react-native";
-import { Account, Client, Databases, Storage } from "react-native-appwrite";
+import {
+  Account,
+  Avatars,
+  Client,
+  Databases,
+  Storage,
+} from "react-native-appwrite";
 
 const client = new Client()
   .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT || "")
@@ -17,5 +23,6 @@ switch (Platform.OS) {
 const account = new Account(client);
 const databases = new Databases(client);
 const storage = new Storage(client);
+const avatars = new Avatars(client);
 
-export { account, client, databases, storage };
+export { account, avatars, client, databases, storage };

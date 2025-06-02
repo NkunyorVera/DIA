@@ -1,95 +1,95 @@
-import { useAuth } from "@/context/AuthContext";
-import { uploadAndUpdateProfileImage } from "@/lib/appwriteService";
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import { Image, Modal, TouchableOpacity, View } from "react-native";
-import Toast from "react-native-toast-message";
+
+import { useGlobalContext } from "@/context/GlobalProvider";
+import { updateUserPhoto, uploadUserPhoto } from "@/lib/appwite_utility";
+
+import {
+  pickImageFromGallery,
+  prepareFileBlob,
+  showToast,
+} from "@/utils/imageHelpers";
 import CustomText from "./CustomText";
 import SubmitButton from "./SubmitButton";
 
 interface PhotoModalProps {
   visible: boolean;
   onClose: () => void;
-  onImageUpdate?: (imageUrl: string) => void;
 }
 
-export default function FileUploadModal({
-  visible,
-  onClose,
-  onImageUpdate,
-}: PhotoModalProps) {
-  const { user } = useAuth();
+const IMAGE_OPTIONS = {
+  mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  allowsEditing: true,
+  aspect: [1, 1] as [number, number],
+  quality: 0.8,
+};
+
+const PERMISSION_ERROR = {
+  type: "error",
+  text1: "Permission required",
+  text2: "Please enable photo library access in settings",
+  position: "top",
+};
+
+export default function FileUploadModal({ visible, onClose }: PhotoModalProps) {
+  const { user, setUser } = useGlobalContext();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const pickImage = async () => {
-    try {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        Toast.show({
-          type: "error",
-          text1: "Permission required",
-          text2: "Please enable photo library access in settings",
-          position: "bottom",
-        });
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.8, // Slightly reduced quality for better performance
-      });
-
-      if (!result.canceled && result.assets[0]?.uri) {
-        setSelectedImage(result.assets[0].uri);
-      }
-    } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Failed to select image",
-        position: "bottom",
-      });
-    }
+  const requestImage = async () => {
+    const uri = await pickImageFromGallery();
+    if (uri) setSelectedImage(uri);
   };
 
   const handleImageSubmit = async () => {
     if (!selectedImage) {
-      Toast.show({
-        type: "error",
-        text1: "No image selected",
-        text2: "Please select an image first",
-        position: "bottom",
-      });
+      showToast("error", "No image selected", "Please select an image first");
       return;
     }
 
     try {
       setIsLoading(true);
-      const imageUrl = await uploadAndUpdateProfileImage(user.$id);
+      const fileBlob = await prepareFileBlob(selectedImage);
 
-      Toast.show({
-        type: "success",
-        text1: "Success",
-        text2: "Profile image updated!",
-        position: "bottom",
-      });
+      const res = user?.disabilitycard
+        ? await uploadUserPhoto({
+            file: fileBlob,
+            userId: user.$id,
+            type: "disabilityCard",
+          })
+        : await updateUserPhoto({
+            file: fileBlob,
+            userId: user.$id,
+            type: "disabilityCard",
+          });
 
-      onImageUpdate?.(imageUrl);
+      showToast("success", "Success", "Disability card uploaded successfully");
+      setUser(res);
       onClose();
     } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Upload failed",
-        text2: "Could not update profile image",
-        position: "bottom",
-      });
+      console.error("Upload failed:", error);
+      showToast(
+        "error",
+        "Upload failed",
+        "Could not update disability card image"
+      );
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const renderImagePreview = () => {
+    if (!selectedImage) return null;
+    return (
+      <View className="items-center mb-4">
+        <Image
+          source={{ uri: selectedImage }}
+          className="w-32 h-32 rounded-full border-2 border-purple-200"
+          resizeMode="cover"
+        />
+      </View>
+    );
   };
 
   return (
@@ -102,22 +102,14 @@ export default function FileUploadModal({
       <View className="flex-1 justify-center items-center bg-black/70 p-5">
         <View className="bg-white w-full max-w-md p-6 rounded-xl space-y-4">
           <CustomText className="text-xl font-bold text-center mb-4">
-            Update Profile Photo
+            Upload Disability Card Image
           </CustomText>
 
-          {selectedImage && (
-            <View className="items-center mb-4">
-              <Image
-                source={{ uri: selectedImage }}
-                className="w-32 h-32 rounded-full border-2 border-purple-200"
-                resizeMode="cover"
-              />
-            </View>
-          )}
+          {renderImagePreview()}
 
           <TouchableOpacity
             className="border-2 border-purple-600 py-3 px-6 rounded-full items-center mb-4"
-            onPress={pickImage}
+            onPress={requestImage}
             disabled={isLoading}
           >
             <CustomText className="text-purple-600 font-medium">
@@ -128,7 +120,7 @@ export default function FileUploadModal({
           <SubmitButton
             loading={isLoading}
             handleClick={handleImageSubmit}
-            label="Update Profile"
+            label="Upload Image"
           />
 
           <TouchableOpacity

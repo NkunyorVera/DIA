@@ -7,7 +7,7 @@ export type UserType = {
   address?: string;
   password: string;
   disability?: string;
-  photoUrl?: string;
+  avatar?: string;
 };
 
 export type UserUpdateType = {
@@ -15,7 +15,25 @@ export type UserUpdateType = {
   phone?: string;
   address?: string;
   disability?: string;
-  photoUrl?: string;
+  avatar?: string;
+};
+
+export type UserProfile = {
+  userId: string;
+  email: string;
+  name: string;
+  phone: string;
+  address: string;
+  disability: string;
+  avatar: string;
+  disabilityCard: string;
+};
+
+export type FileUpload = {
+  uri: string;
+  name: string;
+  type: string;
+  size: number;
 };
 
 export type AuthRoutes = "/" | "/signin" | "/signup";
@@ -30,3 +48,9 @@ export type FeatureCardType = {
 };
 
 export type FeatureRouteType = "/(tabs)/jobs" | "/(tabs)/community" | null;
+
+export type SlideType = {
+  title: string;
+  description: string;
+  imageUrl: string;
+};

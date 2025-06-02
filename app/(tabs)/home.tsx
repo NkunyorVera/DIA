@@ -3,40 +3,18 @@ import FeatureList from "@/components/FeatureList";
 import FileUploadModal from "@/components/FileUploadModal";
 import HomeScreenHeader from "@/components/HomeScreenHeader";
 import UserInfoModal from "@/components/UserInfoModal";
-import { useAuth } from "@/context/AuthContext";
-import { fetchUserInfo } from "@/lib/appwriteService";
+import { useGlobalContext } from "@/context/GlobalProvider";
 import React, { JSX, useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
 
 export default function HomeScreen(): JSX.Element {
-  const { user } = useAuth();
+  const { user } = useGlobalContext();
   const [showUserInfoModal, setShowUserInfoModal] = useState<boolean>(false);
   const [showFileUploadModal, setShowFileUploadModal] =
     useState<boolean>(false);
-  const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
-    if (user?.$id) {
-      fetchUserInfo(user.$id)
-        .then((userInfo) => {
-          setCurrentUser(userInfo);
-          if (!userInfo?.disability || !userInfo?.phone) {
-            setShowUserInfoModal(true);
-          }
-        })
-        .catch((error) => {
-          Toast.show({
-            type: "error",
-            text1: "Error fetching user info",
-            text2: "Please try again later.",
-            position: "top",
-          });
-          console.error("Error fetching user info:", error);
-          setShowUserInfoModal(true);
-        });
-    }
     // Welcome message when screen loads
     // Speech.speak(
     //   `Welcome to your dashboard ${
@@ -54,7 +32,7 @@ export default function HomeScreen(): JSX.Element {
     setShowFileUploadModal(true);
   };
 
-  const userName: string = currentUser?.name || "User";
+  const userName: string = user?.username || "User";
 
   return (
     <SafeAreaView edges={[]} className="flex-1 bg-white">

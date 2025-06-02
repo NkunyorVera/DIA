@@ -1,13 +1,20 @@
 import CustomText from "@/components/CustomText";
+import FileUploadModal from "@/components/FileUploadModal";
 import ProfileField from "@/components/ProfileField";
-import { useAuth } from "@/context/AuthContext";
+import { useGlobalContext } from "@/context/GlobalProvider";
 import {
-  fetchUserInfo,
-  updateProfile,
-  uploadAndUpdateProfileImage,
-} from "@/lib/appwriteService";
+  updateUser,
+  updateUserPhoto,
+  uploadUserPhoto,
+} from "@/lib/appwite_utility";
+import { signOut } from "@/lib/appwrite-auth";
+import {
+  pickImageFromGallery,
+  prepareFileBlob,
+  showToast,
+} from "@/utils/imageHelpers";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -15,11 +22,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { AppwriteException } from "react-native-appwrite";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
 
 type FormData = {
-  name: string;
+  username: string;
   email: string;
   phone: string;
   address: string;
@@ -27,63 +34,54 @@ type FormData = {
 };
 
 export default function ProfileScreen() {
-  const { user, signout } = useAuth();
+  const { user, setUser, setIsLoggedIn } = useGlobalContext();
   const [formData, setFormData] = useState<FormData>({
-    name: "",
-    email: "",
-    phone: "+1.415.111.0000",
-    address: "San Francisco, CA",
-    disability: "",
+    username: user?.username || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    address: user?.address || "",
+    disability: user?.disability || "",
   });
-  const [profileImage, setProfileImage] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [avatar, setAvatar] = useState(user.avatar);
   const [isEditing, setIsEditing] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [showFileUploadModal, setShowFileUploadModal] = useState(false);
 
-  const loadUserData = async () => {
-    try {
-      setLoading(true);
-      const userData = await fetchUserInfo(user.$id);
-      setFormData({
-        name: userData.name,
-        email: userData.email,
-        phone: userData.phone,
-        address: userData.address,
-        disability: userData.disability,
-      });
-      setProfileImage(userData?.photoUrl ?? "");
-    } catch (error) {
-      console.error("Error loading user data:", error);
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Failed to load user data",
-        position: "top",
-      });
-    } finally {
-      setLoading(false);
+  const handleChangeAvatar = async () => {
+    if (!avatar) {
+      showToast("error", "No image selected", "Please select an image first");
+      return;
     }
-  };
 
-  const handleChangeProfileImage = async () => {
     try {
       setIsUploadingImage(true);
-      const imageUrl = await uploadAndUpdateProfileImage(user.$id);
-      setProfileImage(imageUrl);
-      Toast.show({
-        type: "success",
-        text1: "Success",
-        text2: "Profile image updated successfully",
-        position: "top",
-      });
+      const uri = await pickImageFromGallery();
+      if (!uri) return;
+      setAvatar(uri);
+
+      const fileBlob = await prepareFileBlob(uri);
+      const res = user?.profile
+        ? await updateUserPhoto({
+            file: fileBlob,
+            userId: user.$id,
+            type: "avatar",
+          })
+        : await uploadUserPhoto({
+            file: fileBlob,
+            userId: user.$id,
+            type: "avatar",
+          });
+
+      setUser(res);
+      showToast(
+        "success",
+        "Profile Updated",
+        "Your profile image has been updated."
+      );
     } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Failed to update profile image",
-        position: "top",
-      });
+      console.error(error);
+      showToast("error", "Upload failed", "Could not update profile image");
     } finally {
       setIsUploadingImage(false);
     }
@@ -92,52 +90,39 @@ export default function ProfileScreen() {
   const handleSaveProfile = async () => {
     try {
       setIsUpdating(true);
-      await updateProfile(user.$id, { ...formData, photoUrl: profileImage });
-      Toast.show({
-        type: "success",
-        text1: "Success",
-        text2: "Profile updated successfully",
-        position: "top",
-      });
+      await updateUser(user.$id, { ...formData });
+      showToast("success", "Success", "Profile updated successfully");
       setIsEditing(false);
     } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Failed to update profile",
-        position: "top",
-      });
+      showToast("error", "Error", "Failed to update profile");
     } finally {
       setIsUpdating(false);
     }
   };
 
-  const handleCancelEdit = () => {
-    loadUserData(); // Reset form with original data
-    setIsEditing(false);
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      setUser(null);
+      setIsLoggedIn(false);
+    } catch (error) {
+      if (error instanceof AppwriteException) {
+        showToast("error", "Error", "Failed to sign out");
+      }
+    }
   };
 
   const handleChange = (key: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
-  useEffect(() => {
-    loadUserData();
-  }, []);
-
-  if (loading) {
-    return (
-      <SafeAreaView edges={[]} className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" />
-      </SafeAreaView>
-    );
-  }
-
   return (
     <SafeAreaView edges={[]} className="flex-1 bg-white">
       <View className="flex-row justify-between items-center px-6 py-4 border-b border-gray-200">
         <TouchableOpacity
-          onPress={isEditing ? handleCancelEdit : () => setIsEditing(true)}
+          onPress={
+            isEditing ? () => setIsEditing(false) : () => setIsEditing(true)
+          }
         >
           <CustomText className="text-purple-600 font-medium">
             {isEditing ? "Cancel" : "Edit Profile"}
@@ -157,7 +142,7 @@ export default function ProfileScreen() {
             )}
           </TouchableOpacity>
         ) : (
-          <View style={{ width: 60 }} /> // Spacer for alignment
+          <View style={{ width: 60 }} />
         )}
       </View>
 
@@ -171,48 +156,48 @@ export default function ProfileScreen() {
               <ActivityIndicator
                 size="small"
                 color="#9333ea"
-                className="absolute inset-0 flex items-center justify-center"
+                className="absolute inset-0"
               />
-            ) : profileImage === "" ? (
+            ) : avatar ? (
               <Image
-                source={require("@/assets/profile.png")}
-                resizeMode="cover"
+                source={{ uri: avatar }}
                 className="w-24 h-24 rounded-full border-4 border-purple-300 mb-4"
               />
             ) : (
               <Image
-                source={{ uri: profileImage }}
+                source={require("@/assets/profile.png")}
                 className="w-24 h-24 rounded-full border-4 border-purple-300 mb-4"
               />
             )}
 
             {isEditing && (
               <TouchableOpacity
-                onPress={handleChangeProfileImage}
+                onPress={handleChangeAvatar}
                 className="absolute bottom-0 right-0 bg-purple-100 rounded-full p-2"
               >
                 <Ionicons name="camera-outline" size={20} color="#9333ea" />
               </TouchableOpacity>
             )}
           </View>
+
           <CustomText className="text-2xl font-bold">
-            {formData.name}
+            {user.username}
           </CustomText>
-          <CustomText className="text-gray-500">{formData.email}</CustomText>
+          <CustomText className="text-gray-500">{user.email}</CustomText>
         </View>
 
         <View className="mb-6 gap-4">
           <ProfileField
             label="Name"
-            value={formData.name}
+            value={formData.username}
             isEditing={isEditing}
-            onChangeText={(text) => handleChange("name", text)}
+            onChangeText={(text) => handleChange("username", text)}
           />
           <ProfileField
             label="Email"
             value={formData.email}
             isEditing={isEditing}
-            editable={false} // Email typically shouldn't be editable
+            editable={false}
           />
           <ProfileField
             label="Phone"
@@ -236,7 +221,7 @@ export default function ProfileScreen() {
 
         {!isEditing && (
           <TouchableOpacity
-            onPress={signout}
+            onPress={handleSignOut}
             className="my-8 border border-red-500 py-3 rounded-xl items-center flex-row justify-center"
           >
             <Feather name="log-out" size={20} color="#DC2626" />
@@ -245,7 +230,24 @@ export default function ProfileScreen() {
             </CustomText>
           </TouchableOpacity>
         )}
+
+        {isEditing && (
+          <TouchableOpacity
+            onPress={() => setShowFileUploadModal(true)}
+            className="my-8 border border-purple-500 py-3 rounded-xl items-center flex-row justify-center"
+          >
+            <Feather name="file-plus" size={20} color="#9333ea" />
+            <CustomText className="ml-2 text-purple-600 font-semibold text-base">
+              Upload Disability Card
+            </CustomText>
+          </TouchableOpacity>
+        )}
       </ScrollView>
+
+      <FileUploadModal
+        visible={showFileUploadModal}
+        onClose={() => setShowFileUploadModal(false)}
+      />
     </SafeAreaView>
   );
 }

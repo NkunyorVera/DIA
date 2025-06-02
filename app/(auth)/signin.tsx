@@ -4,30 +4,47 @@ import CustomText from "@/components/CustomText";
 import GoBack from "@/components/GoBack";
 import MicButton from "@/components/MicButton";
 import SubmitButton from "@/components/SubmitButton";
-import { useAuth } from "@/context/AuthContext";
-import { signin } from "@/lib/authService";
+import { useGlobalContext } from "@/context/GlobalProvider";
+import { getCurrentUser } from "@/lib/appwite_utility";
+import { signIn } from "@/lib/appwrite-auth";
 import { appGuide, stopGuide } from "@/lib/speech";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import Toast from "react-native-toast-message";
 
 export default function SignInScreen() {
-  const [user, setUser] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const { updateUserAndSession } = useAuth();
-  const handleSignin = () =>
-    signin(
-      user,
-      () => {
-        updateUserAndSession();
-        Toast.show({ type: "success", text1: "Signed in successfully" });
-      },
-      (message) => {
-        Toast.show({ type: "error", text1: "Login Failed", text2: message });
-      },
-      setLoading
-    );
+  const { setUser, setIsLoggedIn } = useGlobalContext();
+  const handleSignin = async () => {
+    if (!form.email || !form.password) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Please fill in all fields.",
+      });
+      return;
+    }
+    try {
+      await signIn(form.email, form.password);
+      const result = await getCurrentUser();
+      setUser(result);
+      setIsLoggedIn(true);
+
+      router.replace("/home");
+    } catch (error) {
+      if (error instanceof Error) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: error.message,
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     appGuide(
@@ -39,7 +56,7 @@ export default function SignInScreen() {
   }, []);
 
   const handleInputChange = (name: string, value: string) => {
-    setUser((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFocus = (fieldName: string) => {
@@ -58,7 +75,7 @@ export default function SignInScreen() {
       <AuthInput
         icon="mail-outline"
         placeholder="Email"
-        value={user.email}
+        value={form.email}
         onChangeText={handleInputChange.bind(null, "email")}
         onFocus={() => handleFocus("Email")}
       />
@@ -66,7 +83,7 @@ export default function SignInScreen() {
         icon="lock-closed-outline"
         placeholder="Password"
         secureTextEntry
-        value={user.password}
+        value={form.password}
         onChangeText={handleInputChange.bind(null, "password")}
         onFocus={() => handleFocus("Password")}
       />

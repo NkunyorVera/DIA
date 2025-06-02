@@ -1,4 +1,4 @@
-import { AuthProvider } from "@/context/AuthContext";
+import { GlobalProvider } from "@/context/GlobalProvider";
 import { toastConfig } from "@/lib/toast";
 import * as Font from "expo-font";
 import { Stack } from "expo-router";
@@ -7,7 +7,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
 import Toast from "react-native-toast-message";
 import "./globals.css";
-// import AppLoading from "expo-app-loading"; // Optional fallback
 
 export default function RootLayout() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -29,7 +28,7 @@ export default function RootLayout() {
   if (!fontsLoaded) return null; // or <AppLoading />
 
   return (
-    <AuthProvider>
+    <GlobalProvider>
       <StatusBar style="light" />
 
       {/* Background view behind status bar */}
@@ -43,6 +42,6 @@ export default function RootLayout() {
         <Stack.Screen name="(auth)" />
       </Stack>
       <Toast config={toastConfig} />
-    </AuthProvider>
+    </GlobalProvider>
   );
 }

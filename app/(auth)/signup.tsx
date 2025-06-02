@@ -3,25 +3,24 @@ import AuthInput from "@/components/AuthInput";
 import CustomText from "@/components/CustomText";
 import GoBack from "@/components/GoBack";
 import SubmitButton from "@/components/SubmitButton";
-import { useAuth } from "@/context/AuthContext";
-import { signup } from "@/lib/authService";
+import { useGlobalContext } from "@/context/GlobalProvider";
+import { createUser } from "@/lib/appwrite-auth";
 import { appGuide, stopGuide } from "@/lib/speech";
 import { Ionicons } from "@expo/vector-icons";
-import { Link } from "expo-router";
-import { navigate } from "expo-router/build/global-state/routing";
+import { Link, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 
 export default function SignUpScreen() {
-  const [user, setUser] = useState({
+  const router = useRouter();
+  const [form, setForm] = useState({
     name: "",
     email: "",
-    phoneNumber: "",
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const { updateUserAndSession } = useAuth();
+  const { setUser, setIsLoggedIn } = useGlobalContext();
 
   useEffect(() => {
     appGuide("Sign up screen. Please enter your details to create an account.");
@@ -31,26 +30,54 @@ export default function SignUpScreen() {
   }, []);
 
   const handleChange = (field: string, value: string) => {
-    setUser((prev) => ({ ...prev, [field]: value }));
+    setForm((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleFocus = (fieldName: string) => {
     appGuide(fieldName);
   };
-  const handleSignup = () =>
-    signup(
-      user,
-      () => {
-        updateUserAndSession();
-        Toast.show({ type: "success", text1: "Account created successfully" });
-        navigate("/(tabs)/home");
-      },
-      (message) => {
-        Toast.show({ type: "error", text1: "Signup Failed", text2: message });
-      },
-      setLoading
-    );
+  const handleSignup = async () => {
+    if (!form.name || !form.email || !form.password) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Please fill in all fields.",
+      });
+      return;
+    }
 
+    setLoading(true);
+
+    try {
+      const newUser = await createUser(form.email, form.password, form.name);
+      if (newUser) {
+        setUser(newUser);
+        setIsLoggedIn(true);
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: "Account created successfully!",
+        });
+        router.replace("/home");
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Failed to create account.",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      if (error instanceof Error)
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: error?.message || "An unexpected error occurred.",
+        });
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <>
       <GoBack to="/signin" />
@@ -73,21 +100,21 @@ export default function SignUpScreen() {
       <AuthInput
         icon="person-outline"
         placeholder="Full Name"
-        value={user.name}
+        value={form.name}
         onChangeText={(val: string) => handleChange("name", val)}
         onFocus={() => handleFocus("Full Name")}
       />
       <AuthInput
         icon="mail-outline"
         placeholder="Email Address"
-        value={user.email}
+        value={form.email}
         onChangeText={(val: string) => handleChange("email", val)}
         onFocus={() => handleFocus("Email")}
       />
       <AuthInput
         icon="lock-closed-outline"
         placeholder="Create Password"
-        value={user.password}
+        value={form.password}
         onChangeText={(val: string) => handleChange("password", val)}
         secureTextEntry
         onFocus={() => handleFocus("Password")}

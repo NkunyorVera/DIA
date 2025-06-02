@@ -2,7 +2,6 @@ import { Slot } from "expo-router";
 import React from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
 
 export default function AuthLayout() {
   return (
@@ -35,7 +34,6 @@ export default function AuthLayout() {
             <Slot />
           </View>
         </View>
-        <Toast />
       </SafeAreaView>
     </>
   );
