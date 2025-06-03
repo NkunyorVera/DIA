@@ -1,4 +1,5 @@
 import CustomText from "@/components/CustomText";
+import MicButton from "@/components/MicButton";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { slides } from "@/lib/data";
 import { appGuide, stopGuide } from "@/lib/speech";
@@ -16,12 +17,19 @@ const OnboardingScreen: React.FC = () => {
   const carouselRef = useRef<React.ElementRef<typeof Carousel>>(null);
   const { isLoading, isLoggedIn } = useGlobalContext();
 
+  const { title, description } = slides[activeIndex];
+
   useEffect(() => {
-    appGuide("Welcome to our inclusive app. Let's take a quick tour.");
+    if (!isLoading) {
+      if (activeIndex === 0) {
+        appGuide("Welcome to our inclusive app. Let's take a quick tour.");
+      }
+    }
+    carouselRef.current?.scrollTo({ index: activeIndex, animated: true });
     return () => {
       stopGuide();
     };
-  }, [activeIndex]);
+  }, []);
 
   if (!isLoading && isLoggedIn) {
     return <Redirect href="/home" />;
@@ -34,6 +42,8 @@ const OnboardingScreen: React.FC = () => {
       carouselRef.current?.scrollTo({ index: activeIndex + 1, animated: true });
     }
   };
+
+  appGuide(title + ".\n" + description);
 
   return (
     <SafeAreaView className="flex-1 bg-white px-6 justify-center">
@@ -59,12 +69,18 @@ const OnboardingScreen: React.FC = () => {
         style={{ alignSelf: "center" }}
         renderItem={({ item }) => (
           <View className="p-5 items-center">
-            <View className="w-full rounded-full items-center mb-5 overflow-hidden">
-              <Image
-                source={{ uri: item.imageUrl }}
-                style={{ width: 256, height: 256 }}
-                resizeMode="cover"
-                className="rounded-full"
+            <View className="items-center mb-5 relative">
+              <View>
+                <Image
+                  source={item.imageUrl}
+                  style={{ width: 256, height: 256 }}
+                  resizeMode="cover"
+                  className="rounded-full"
+                />
+              </View>
+              <MicButton
+                message={item.title + "./n" + item.description}
+                className="absolute top-0 right-0 transform -translate-x-1/2 -translate-y-0"
               />
             </View>
             <CustomText className="text-xl font-semibold text-purple-800 text-center mt-4">

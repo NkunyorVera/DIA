@@ -145,15 +145,17 @@ export default function UserInfoModal({
             onChangeText={(val) => handleChange("address", val)}
             onFocus={() => handleFocus("Address")}
           />
-          <RNPickerSelect
-            placeholder={{ label: "Select Disability Type", value: "" }}
-            items={selectInputValues}
-            onValueChange={(value) => handleChange("disability", value)}
-            style={{
-              inputIOS: selectInputStyle,
-              inputAndroid: selectInputStyle,
-            }}
-          />
+          <View className="border border-gray-300 rounded-md">
+            <RNPickerSelect
+              placeholder={{ label: "Select Disability Type", value: "" }}
+              items={selectInputValues}
+              onValueChange={(value) => handleChange("disability", value)}
+              style={{
+                inputIOS: selectInputStyle,
+                inputAndroid: selectInputStyle,
+              }}
+            />
+          </View>
 
           <SubmitButton
             loading={submitting}

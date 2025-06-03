@@ -52,13 +52,14 @@ export default function FileUploadModal({ visible, onClose }: PhotoModalProps) {
       setIsLoading(true);
       const fileBlob = await prepareFileBlob(selectedImage);
 
-      const res = user?.disabilitycard
-        ? await uploadUserPhoto({
+      const res = user.disabilityCard
+        ? await updateUserPhoto({
             file: fileBlob,
             userId: user.$id,
             type: "disabilityCard",
+            photoUrl: user?.disabilityCard,
           })
-        : await updateUserPhoto({
+        : await uploadUserPhoto({
             file: fileBlob,
             userId: user.$id,
             type: "disabilityCard",

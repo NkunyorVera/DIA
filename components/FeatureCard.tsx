@@ -37,9 +37,9 @@ export default function FeatureCard({
     >
       <View className="flex-1 items-center">
         <View className="w-16 h-16 rounded-full bg-white mb-2 justify-center items-center">
-          <MaterialCommunityIcons name={mainIcon} size={32} color={iconColor} />
+          <MaterialCommunityIcons name={mainIcon} size={32} color={bgColor} />
         </View>
-        <CustomText className="text-text-primary font-bold text-lg">
+        <CustomText className="text-white font-bold text-lg">
           {title}
         </CustomText>
         <FontAwesome

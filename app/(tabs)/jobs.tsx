@@ -1,10 +1,32 @@
 import CustomText from "@/components/CustomText";
+import { getJobs } from "@/lib/appwite_utility";
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
-import { ScrollView, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function FindJobsScreen() {
+  const [jobs, setJobs] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    getJobs()
+      .then((res) => {
+        setJobs(res);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch jobs:", error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
+
   return (
     <SafeAreaView edges={[]} className="flex-1 bg-white">
       <View className="flex-1 bg-purple-50">
@@ -36,39 +58,47 @@ export default function FindJobsScreen() {
 
           {/* Job Listings */}
           <View className="gap-5 pb-10">
-            {[1, 2, 3, 4].map((item) => (
-              <View
-                key={item}
-                className="bg-white p-5 rounded-2xl shadow-sm border border-blue-100"
-              >
-                {/* Time */}
-                <CustomText className="text-gray-500 text-xs mb-2">
-                  4 days ago
-                </CustomText>
-
-                {/* Job Info */}
-                <View className="flex-row items-start mb-4">
-                  <View className="bg-purple-100 p-3 rounded-full mr-4">
-                    <Ionicons name="briefcase" size={20} color="#9333ea" />
-                  </View>
-                  <View className="flex-1">
-                    <CustomText className="text-purple-800 text-lg font-semibold">
-                      ACC. Tech
-                    </CustomText>
-                    <CustomText className="text-gray-600 text-sm">
-                      Customer Support role
-                    </CustomText>
-                  </View>
-                </View>
-
-                {/* Apply Button */}
-                <TouchableOpacity className="bg-purple-600 py-2.5 rounded-xl">
-                  <CustomText className="text-white text-center font-medium text-sm">
-                    Apply Now
-                  </CustomText>
-                </TouchableOpacity>
+            {isLoading && <ActivityIndicator size="small" color="#9333ea" />}
+            {!isLoading && jobs.length === 0 && (
+              <View>
+                <CustomText>No Jobs Available</CustomText>
               </View>
-            ))}
+            )}
+            {!isLoading &&
+              jobs.length > 0 &&
+              jobs.map((item: any, index: number) => (
+                <View
+                  key={item.id || index}
+                  className="bg-white p-5 rounded-2xl shadow-sm border border-blue-100"
+                >
+                  {/* Time */}
+                  <CustomText className="text-gray-500 text-xs mb-2">
+                    4 days ago
+                  </CustomText>
+
+                  {/* Job Info */}
+                  <View className="flex-row items-start mb-4">
+                    <View className="bg-purple-100 p-3 rounded-full mr-4">
+                      <Ionicons name="briefcase" size={20} color="#9333ea" />
+                    </View>
+                    <View className="flex-1">
+                      <CustomText className="text-purple-800 text-lg font-semibold">
+                        {item.company}
+                      </CustomText>
+                      <CustomText className="text-gray-600 text-sm">
+                        {item.title}
+                      </CustomText>
+                    </View>
+                  </View>
+
+                  {/* Apply Button */}
+                  <TouchableOpacity className="bg-purple-600 py-2.5 rounded-xl">
+                    <CustomText className="text-white text-center font-medium text-sm">
+                      Apply Now
+                    </CustomText>
+                  </TouchableOpacity>
+                </View>
+              ))}
           </View>
         </ScrollView>
       </View>

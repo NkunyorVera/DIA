@@ -6,11 +6,13 @@ const DATABASE_ID = process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!;
 const USERS_COLLECTION_ID =
   process.env.EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID!;
 const STORAGE_ID = process.env.EXPO_PUBLIC_APPWRITE_STORAGE_ID!;
+const JOBS_ID = process.env.EXPO_PUBLIC_APPWRITE_JOBS_COLLECTION_ID!;
 
 type UploadParamsType = {
   file: FileUpload;
   userId: string;
   type: "avatar" | "disabilityCard";
+  photoUrl?: string;
 };
 
 export const getCurrentUser =
@@ -53,28 +55,47 @@ export async function uploadUserPhoto({
   userId,
   type,
 }: UploadParamsType) {
-  const storageRes = await storage.createFile(STORAGE_ID, ID.unique(), file);
-  const storageId = storageRes.$id;
-  const url = storage.getFileView(STORAGE_ID, storageId).href;
+  try {
+    const storageRes = await storage.createFile(STORAGE_ID, ID.unique(), file);
+    const storageId = storageRes.$id;
+    const url = storage.getFileView(STORAGE_ID, storageId).href;
 
-  const res = await databases.updateDocument(
-    DATABASE_ID,
-    USERS_COLLECTION_ID,
-    userId,
-    {
-      [type]: url,
-    }
-  );
+    const res = await databases.updateDocument(
+      DATABASE_ID,
+      USERS_COLLECTION_ID,
+      userId,
+      {
+        [type]: url,
+      }
+    );
 
-  return res;
+    return res;
+  } catch (error) {
+    console.log(error);
+    throw new Error();
+  }
 }
 
 export async function updateUserPhoto({
   file,
   userId,
   type,
+  photoUrl,
 }: UploadParamsType) {
   try {
+    const pathArray = photoUrl?.split("/") || [];
+    const photoId =
+      pathArray[pathArray.findIndex((value) => value === "files") + 1];
+
+    console.log(photoId);
+
+    const photo = await storage.getFile(STORAGE_ID, photoId || "");
+
+    console.log(photo.$id);
+    if (!photo) return;
+
+    await storage.deleteFile(STORAGE_ID, photo.$id);
+
     const storageRes = await storage.createFile(STORAGE_ID, ID.unique(), file);
     const storageId = storageRes.$id;
     const url = storage.getFileView(STORAGE_ID, storageId).href;
@@ -93,3 +114,13 @@ export async function updateUserPhoto({
     throw new Error();
   }
 }
+
+export const getJobs = async () => {
+  try {
+    const result = await databases.listDocuments(DATABASE_ID, JOBS_ID);
+    return result.documents;
+  } catch (error) {
+    console.log(error);
+    throw new Error();
+  }
+};

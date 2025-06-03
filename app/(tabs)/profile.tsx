@@ -42,23 +42,23 @@ export default function ProfileScreen() {
     address: user?.address || "",
     disability: user?.disability || "",
   });
-  const [avatar, setAvatar] = useState(user.avatar);
+  const [avatar, setAvatar] = useState(user?.avatar || "");
   const [isEditing, setIsEditing] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [showFileUploadModal, setShowFileUploadModal] = useState(false);
 
   const handleChangeAvatar = async () => {
-    if (!avatar) {
-      showToast("error", "No image selected", "Please select an image first");
-      return;
-    }
-
     try {
       setIsUploadingImage(true);
       const uri = await pickImageFromGallery();
       if (!uri) return;
       setAvatar(uri);
+
+      if (!uri) {
+        showToast("error", "No image selected", "Please select an image first");
+        return;
+      }
 
       const fileBlob = await prepareFileBlob(uri);
       const res = user?.profile
@@ -66,6 +66,7 @@ export default function ProfileScreen() {
             file: fileBlob,
             userId: user.$id,
             type: "avatar",
+            photoUrl: user?.avatar,
           })
         : await uploadUserPhoto({
             file: fileBlob,

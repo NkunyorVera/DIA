@@ -15,6 +15,11 @@ export default function HomeScreen(): JSX.Element {
     useState<boolean>(false);
 
   useEffect(() => {
+    if (!user.disability) {
+      setShowUserInfoModal(true);
+    } else if (!user.disabilityCard) {
+      setShowFileUploadModal(true);
+    }
     // Welcome message when screen loads
     // Speech.speak(
     //   `Welcome to your dashboard ${
@@ -25,11 +30,13 @@ export default function HomeScreen(): JSX.Element {
     // return () => {
     //   Speech.stop();
     // };
-  }, []);
+  }, [user]);
 
   const openNextModal = () => {
     setShowUserInfoModal(false);
-    setShowFileUploadModal(true);
+    if (!user.disabilityCard) {
+      setShowFileUploadModal(true);
+    }
   };
 
   const userName: string = user?.username || "User";
@@ -38,7 +45,7 @@ export default function HomeScreen(): JSX.Element {
     <SafeAreaView edges={[]} className="flex-1 bg-white">
       <UserInfoModal
         visible={showUserInfoModal}
-        onClose={() => setShowUserInfoModal(false)}
+        onClose={openNextModal}
         callbackFunc={openNextModal}
       />
 

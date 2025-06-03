@@ -101,6 +101,12 @@ export default function TabsLayout() {
           href: null, // This completely removes it from the tab bar
         }}
       />
+      <Tabs.Screen
+        name="health"
+        options={{
+          href: null, // This completely removes it from the tab bar
+        }}
+      />
     </Tabs>
   );
 }

@@ -38,7 +38,7 @@ export const createUser = async (
 
     if (!newAccount) throw new Error("Account creation failed");
 
-    const avatarUrl = avatars.getInitials(username, 100, 100, "circle");
+    const avatarUrl = avatars.getInitials(username);
 
     await signIn(email, password); // Ensure this works and sets up session
 
@@ -56,7 +56,7 @@ export const createUser = async (
 
     return newUser;
   } catch (error) {
-    console.log(error, "mm");
+    console.log(error);
     throw error;
   }
 };
