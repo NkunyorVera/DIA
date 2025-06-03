@@ -47,10 +47,25 @@ export type FeatureCardType = {
   route: FeatureRouteType;
 };
 
-export type FeatureRouteType = "/(tabs)/jobs" | "/(tabs)/community" | null;
+export type FeatureRouteType =
+  | "/(tabs)/(jobs)/"
+  | "/(tabs)/community"
+  | "/(tabs)/(health)/"
+  | null;
 
 export type SlideType = {
   title: string;
   description: string;
   imageUrl: string;
+};
+
+export type HealthBenefit = {
+  $id: string;
+  title: string;
+  description: string;
+  deadline: string;
+  contact: string;
+  location: string;
+  website: string;
+  organization: string;
 };

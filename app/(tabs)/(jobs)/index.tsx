@@ -1,6 +1,8 @@
 import CustomText from "@/components/CustomText";
 import { getJobs } from "@/lib/appwite_utility";
+import { formatDate } from "@/lib/utils";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -13,6 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function FindJobsScreen() {
   const [jobs, setJobs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     getJobs()
@@ -58,7 +61,11 @@ export default function FindJobsScreen() {
 
           {/* Job Listings */}
           <View className="gap-5 pb-10">
-            {isLoading && <ActivityIndicator size="small" color="#9333ea" />}
+            {isLoading && (
+              <View className="flex-1 justify-center items-center">
+                <ActivityIndicator size="large" />
+              </View>
+            )}
             {!isLoading && jobs.length === 0 && (
               <View>
                 <CustomText>No Jobs Available</CustomText>
@@ -67,13 +74,19 @@ export default function FindJobsScreen() {
             {!isLoading &&
               jobs.length > 0 &&
               jobs.map((item: any, index: number) => (
-                <View
-                  key={item.id || index}
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push({
+                      pathname: "/(tabs)/(jobs)/details/[id]",
+                      params: { id: item.$id },
+                    })
+                  }
+                  key={item.$id || index}
                   className="bg-white p-5 rounded-2xl shadow-sm border border-blue-100"
                 >
                   {/* Time */}
                   <CustomText className="text-gray-500 text-xs mb-2">
-                    4 days ago
+                    {formatDate(item?.deadline)}
                   </CustomText>
 
                   {/* Job Info */}
@@ -90,14 +103,7 @@ export default function FindJobsScreen() {
                       </CustomText>
                     </View>
                   </View>
-
-                  {/* Apply Button */}
-                  <TouchableOpacity className="bg-purple-600 py-2.5 rounded-xl">
-                    <CustomText className="text-white text-center font-medium text-sm">
-                      Apply Now
-                    </CustomText>
-                  </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
               ))}
           </View>
         </ScrollView>

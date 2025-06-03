@@ -4,7 +4,7 @@ import Toast from "react-native-toast-message";
 
 // Toast helper
 export const showToast = (
-  type: "success" | "error",
+  type: "success" | "error" | "info",
   text1: string,
   text2: string
 ) => {

@@ -7,6 +7,7 @@ const USERS_COLLECTION_ID =
   process.env.EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID!;
 const STORAGE_ID = process.env.EXPO_PUBLIC_APPWRITE_STORAGE_ID!;
 const JOBS_ID = process.env.EXPO_PUBLIC_APPWRITE_JOBS_COLLECTION_ID!;
+const HEALTH_ID = process.env.EXPO_PUBLIC_APPWRITE_HEALTH_COLLECTION_ID!;
 
 type UploadParamsType = {
   file: FileUpload;
@@ -119,6 +120,35 @@ export const getJobs = async () => {
   try {
     const result = await databases.listDocuments(DATABASE_ID, JOBS_ID);
     return result.documents;
+  } catch (error) {
+    console.log(error);
+    throw new Error();
+  }
+};
+
+export const getHealthBenefits = async () => {
+  try {
+    const result = await databases.listDocuments(DATABASE_ID, HEALTH_ID);
+    return result.documents;
+  } catch (error) {
+    console.log(error);
+    throw new Error();
+  }
+};
+
+export const getSingleHealthBenefit = async (id: string) => {
+  try {
+    const result = await databases.getDocument(DATABASE_ID, HEALTH_ID, id);
+    return result;
+  } catch (error) {
+    console.log(error);
+    throw new Error();
+  }
+};
+export const getSingleJob = async (id: string) => {
+  try {
+    const result = await databases.getDocument(DATABASE_ID, JOBS_ID, id);
+    return result;
   } catch (error) {
     console.log(error);
     throw new Error();

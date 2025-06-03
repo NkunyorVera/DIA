@@ -7,7 +7,7 @@ export const featureCards: FeatureCardType[] = [
     iconColor: "#FFFFFF",
     mainIcon: "briefcase-search",
     subIcon: "briefcase",
-    route: "/(tabs)/jobs",
+    route: "/(tabs)/(jobs)/",
   },
   {
     title: "Health Benefits",
@@ -15,7 +15,7 @@ export const featureCards: FeatureCardType[] = [
     iconColor: "#FFFF",
     mainIcon: "hospital-box",
     subIcon: "heartbeat",
-    route: null, // Not navigable
+    route: "/(tabs)/(health)/", // Not navigable
   },
   {
     title: "Join Communities",

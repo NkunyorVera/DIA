@@ -17,3 +17,12 @@ export const validateInputs = ({
   if (password.length < 6) return "Password must be at least 6 characters long";
   return null;
 };
+
+export const formatDate = (dateString: string): string => {
+  const formattedDate = new Date(dateString).toLocaleDateString("en-us", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  return String(formatDate);
+};
