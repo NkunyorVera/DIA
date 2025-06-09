@@ -59,17 +59,6 @@ export type SlideType = {
   imageUrl: string;
 };
 
-export type HealthBenefit = {
-  $id: string;
-  title: string;
-  description: string;
-  deadline: string;
-  contact: string;
-  location: string;
-  website: string;
-  organization: string;
-};
-
 export type JobType = {
   $id: string;
   company: string;
@@ -81,4 +70,16 @@ export type JobType = {
   title: string;
   salary: string;
   responsibilities?: string[];
+};
+
+export type HealthBenefitType = {
+  $id: string;
+  organization: string;
+  location?: string;
+  website?: string;
+  contact?: string;
+  description: string;
+  deadline: string;
+  title: string;
+  benefits?: string[];
 };

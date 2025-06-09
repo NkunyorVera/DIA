@@ -144,7 +144,7 @@
 // export default HealthBenefitDetailsScreen;
 import CustomText from "@/components/CustomText";
 import { getSingleHealthBenefit } from "@/lib/appwite_utility";
-import { HealthBenefit } from "@/lib/types";
+import { HealthBenefitType } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 import { showToast } from "@/utils/imageHelpers";
 import { Feather, Ionicons, MaterialIcons } from "@expo/vector-icons";
@@ -163,7 +163,7 @@ import {
 const HealthBenefitDetailsScreen = () => {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const [benefit, setBenefit] = useState<HealthBenefit | any>(null);
+  const [benefit, setBenefit] = useState<HealthBenefitType | any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -185,24 +185,6 @@ const HealthBenefitDetailsScreen = () => {
   }, []);
 
   // Mock data for design purposes
-  const mockBenefit = {
-    title: "Comprehensive Health Plan",
-    organization: "BlueCross Healthcare",
-    description:
-      "Get access to premium healthcare services with full coverage including dental and vision. This plan covers up to 100% of hospitalization costs and includes annual health check-ups.",
-    deadline: "2023-12-31",
-    contact: "+1 (555) 123-4567",
-    location: "Nationwide Coverage",
-    website: "https://bluecross.example.com",
-    type: "Full Coverage",
-    benefits: [
-      "100% hospitalization coverage",
-      "Annual health check-ups included",
-      "Dental and vision coverage",
-      "Mental health services",
-      "Prescription drug coverage",
-    ],
-  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -221,26 +203,28 @@ const HealthBenefitDetailsScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {isLoading ? (
+      {isLoading && (
         <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color="#3b82f6" />
         </View>
-      ) : benefit ? (
-        <ScrollView className="p-6 space-y-6">
+      )}
+
+      {benefit && (
+        <ScrollView className="pt-6 px-6 space-y-6">
           {/* Title and Organization */}
           <View className="space-y-2">
             <CustomText className="text-3xl font-bold text-gray-900">
-              {mockBenefit.title}
+              {benefit.title}
             </CustomText>
             <CustomText className="text-xl text-blue-600">
-              {mockBenefit.organization}
+              {benefit.organization}
             </CustomText>
           </View>
 
           {/* Benefit Type Tag */}
           <View className="bg-blue-50 self-start px-4 py-2 rounded-full">
             <CustomText className="text-blue-600 font-medium">
-              {mockBenefit.type}
+              {benefit.type}
             </CustomText>
           </View>
 
@@ -250,7 +234,7 @@ const HealthBenefitDetailsScreen = () => {
               About This Benefit
             </CustomText>
             <CustomText className="text-gray-700 leading-6">
-              {mockBenefit.description}
+              {benefit.description}
             </CustomText>
           </View>
 
@@ -260,7 +244,7 @@ const HealthBenefitDetailsScreen = () => {
               What's Included
             </CustomText>
             <View className="space-y-2 pl-2">
-              {mockBenefit.benefits.map((item, index) => (
+              {benefit.benefits.map((item: string, index: number) => (
                 <View key={index} className="flex-row items-start">
                   <View className="mt-1.5 mr-2">
                     <MaterialIcons
@@ -289,7 +273,7 @@ const HealthBenefitDetailsScreen = () => {
                     Deadline
                   </CustomText>
                   <CustomText className="text-gray-900">
-                    {formatDate(mockBenefit.deadline)}
+                    {formatDate(benefit.deadline)}
                   </CustomText>
                 </View>
               </View>
@@ -305,7 +289,7 @@ const HealthBenefitDetailsScreen = () => {
                     Contact
                   </CustomText>
                   <CustomText className="text-gray-900">
-                    {mockBenefit.contact}
+                    {benefit.contact || "None"}
                   </CustomText>
                 </View>
               </View>
@@ -321,7 +305,7 @@ const HealthBenefitDetailsScreen = () => {
                     Coverage Area
                   </CustomText>
                   <CustomText className="text-gray-900">
-                    {mockBenefit.location}
+                    {benefit.location || "None"}
                   </CustomText>
                 </View>
               </View>
@@ -329,10 +313,10 @@ const HealthBenefitDetailsScreen = () => {
           </View>
 
           {/* Website Link */}
-          {mockBenefit.website && (
+          {benefit.website && (
             <TouchableOpacity
               className="bg-blue-50 p-4 rounded-xl flex-row items-center justify-between"
-              onPress={() => Linking.openURL(mockBenefit.website)}
+              onPress={() => Linking.openURL(benefit.website)}
             >
               <View className="flex-row items-center space-x-3">
                 <View className="bg-blue-100 p-2 rounded-full">
@@ -348,10 +332,10 @@ const HealthBenefitDetailsScreen = () => {
 
           {/* Apply Button */}
           <TouchableOpacity
-            className="bg-blue-600 py-4 rounded-xl items-center shadow-md shadow-blue-500/30 mt-6"
+            className="border-2 mb-16 border-purple-600 bg-white py-4 rounded-xl items-center shadow-md shadow-blue-500/30 mt-6"
             onPress={() => {
-              if (mockBenefit.website) {
-                Linking.openURL(mockBenefit.website);
+              if (benefit.website) {
+                Linking.openURL(benefit.website);
               } else {
                 showToast(
                   "info",
@@ -361,12 +345,14 @@ const HealthBenefitDetailsScreen = () => {
               }
             }}
           >
-            <CustomText className="text-white font-bold text-lg">
+            <CustomText className="text-purple-600 font-bold text-lg">
               Apply Now
             </CustomText>
           </TouchableOpacity>
         </ScrollView>
-      ) : (
+      )}
+
+      {!isLoading && !benefit && (
         <View className="flex-1 justify-center items-center px-6">
           <CustomText className="text-lg text-center text-gray-500">
             Failed to load health benefit details

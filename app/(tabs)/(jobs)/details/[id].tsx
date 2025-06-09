@@ -1,7 +1,9 @@
 import CustomText from "@/components/CustomText";
+import FileUploadModal from "@/components/FileUploadModal";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { getSingleJob } from "@/lib/appwite_utility";
-import { HealthBenefit } from "@/lib/types";
+import { JobType } from "@/lib/types";
+
 import { formatDate } from "@/lib/utils";
 import { showToast } from "@/utils/imageHelpers";
 import { Feather, Ionicons, MaterialIcons } from "@expo/vector-icons";
@@ -20,9 +22,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const SingleJobScreen = () => {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const [job, setJob] = useState<HealthBenefit | any>(null);
+  const [job, setJob] = useState<JobType | any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useGlobalContext();
+  const [showFileUploadModal, setShowFileUploadModal] = useState(false);
   const isVerified = user.disabilityCard !== null;
 
   useEffect(() => {
@@ -145,15 +148,19 @@ const SingleJobScreen = () => {
           <View className="px-6 pb-6 pt-3 border-t border-gray-100">
             <TouchableOpacity
               className={`${
-                isVerified ? "bg-purple-200" : "bg-gray-600"
+                isVerified ? "bg-purple-200" : "bg-gray-300"
               } py-4 rounded-xl items-center shadow-md shadow-purple-500/30`}
-              onPress={() => {
-                showToast(
-                  "success",
-                  "Application",
-                  "Application process started"
-                );
-              }}
+              onPress={
+                isVerified
+                  ? () => {
+                      showToast(
+                        "success",
+                        "Application",
+                        "Application process started"
+                      );
+                    }
+                  : () => setShowFileUploadModal(true)
+              }
               disabled={isVerified}
             >
               <CustomText
@@ -161,7 +168,7 @@ const SingleJobScreen = () => {
                   isVerified ? "text-purple-600" : "text-white"
                 } font-bold text-lg`}
               >
-                Apply Now
+                Apply
               </CustomText>
             </TouchableOpacity>
           </View>
@@ -171,6 +178,10 @@ const SingleJobScreen = () => {
           <CustomText>Failed to load job details</CustomText>
         </View>
       )}
+      <FileUploadModal
+        visible={showFileUploadModal}
+        onClose={() => setShowFileUploadModal(false)}
+      />
     </SafeAreaView>
   );
 };

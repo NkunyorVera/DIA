@@ -98,7 +98,7 @@ export default function FindJobsScreen() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
               paddingHorizontal: 0,
-              paddingBottom: 100,
+              paddingBottom: 140,
               gap: 24,
             }}
           />

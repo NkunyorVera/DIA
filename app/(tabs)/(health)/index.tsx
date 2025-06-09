@@ -1,5 +1,5 @@
 // import { getHealthBenefits } from "@/lib/appwite_utility";
-// import { HealthBenefit } from "@/lib/types";
+// import { HealthBenefitType } from "@/lib/types";
 // import { useRouter } from "expo-router";
 // import React, { useEffect, useState } from "react";
 // import {
@@ -74,20 +74,19 @@
 // export default HealthBenefitScreen;
 
 import CustomText from "@/components/CustomText";
+import HealthBenefitCard from "@/components/HealthBenefitCard";
 import { getHealthBenefits } from "@/lib/appwite_utility";
-import { HealthBenefit } from "@/lib/types";
-import { Feather, Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { HealthBenefitType } from "@/lib/types";
+import { Feather } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const HealthBenefitScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [healthBenefits, setHealthBenefits] = useState<HealthBenefit[] | any>(
-    []
-  );
-  const router = useRouter();
+  const [healthBenefits, setHealthBenefits] = useState<
+    HealthBenefitType[] | any
+  >([]);
 
   useEffect(() => {
     getHealthBenefits()
@@ -98,80 +97,8 @@ const HealthBenefitScreen = () => {
       .finally(() => setIsLoading(false));
   }, []);
 
-  // Mock data to match the style
-  const mockBenefits = [
-    {
-      id: "1",
-      title: "Comprehensive Health Plan",
-      organization: "BlueCross Healthcare",
-      description:
-        "Get access to premium healthcare services with full coverage including dental and vision.",
-      type: "Full Coverage",
-      deadline: "2023-12-31",
-    },
-    {
-      id: "2",
-      title: "Mental Wellness Program",
-      organization: "MindCare Solutions",
-      description:
-        "Professional counseling and therapy sessions covered up to 20 visits per year.",
-      type: "Mental Health",
-      deadline: "2023-11-15",
-    },
-  ];
-
-  const renderItem = ({ item }: { item: HealthBenefit | any }) => (
-    <Pressable
-      onPress={() =>
-        router.push({
-          pathname: "/(tabs)/(health)/details/[id]",
-          params: { id: item.$id || item.id },
-        })
-      }
-      className="bg-white rounded-2xl p-5 mb-4 shadow-sm border border-gray-100"
-    >
-      {/* Header with bookmark */}
-      <View className="flex-row justify-between items-start mb-3">
-        <View>
-          <CustomText className="text-lg font-bold text-gray-900">
-            {item.title}
-          </CustomText>
-          <CustomText className="text-gray-500 text-sm">
-            {item.organization}
-          </CustomText>
-        </View>
-        <Pressable>
-          <Feather name="bookmark" size={20} color="#9ca3af" />
-        </Pressable>
-      </View>
-
-      {/* Description */}
-      <CustomText className="text-gray-600 text-sm mb-4">
-        {item.description}
-      </CustomText>
-
-      {/* Benefit details */}
-      <View className="flex-row space-x-3 mb-4">
-        <View className="bg-blue-50 px-3 py-1 rounded-full">
-          <CustomText className="text-blue-600 text-xs font-medium">
-            {item.type}
-          </CustomText>
-        </View>
-        <View className="bg-purple-50 px-3 py-1 rounded-full flex-row items-center">
-          <Ionicons name="calendar" size={14} color="#8b5cf6" />
-          <CustomText className="text-purple-600 text-xs font-medium ml-1">
-            Apply by {item.deadline}
-          </CustomText>
-        </View>
-      </View>
-
-      {/* View Details Button */}
-      <Pressable className="border border-blue-600 py-2 rounded-lg items-center">
-        <CustomText className="text-blue-600 font-bold">
-          View Details
-        </CustomText>
-      </Pressable>
-    </Pressable>
+  const renderItem = ({ item }: { item: HealthBenefitType }) => (
+    <HealthBenefitCard {...item} />
   );
 
   return (
@@ -197,11 +124,15 @@ const HealthBenefitScreen = () => {
         </View>
       ) : (
         <FlatList
-          data={mockBenefits.length ? mockBenefits : healthBenefits}
+          data={healthBenefits}
           renderItem={renderItem}
-          keyExtractor={(item) => item.$id || item.id}
+          keyExtractor={(item) => item.$id}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 }}
+          contentContainerStyle={{
+            paddingHorizontal: 24,
+            gap: 20,
+            paddingBottom: 24,
+          }}
         />
       )}
     </SafeAreaView>

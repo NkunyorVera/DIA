@@ -5,7 +5,13 @@ import { slides } from "@/lib/data";
 import { appGuide, stopGuide } from "@/lib/speech";
 import { Redirect, useRouter } from "expo-router"; // Import useRouter
 import React, { useEffect, useRef, useState } from "react";
-import { Dimensions, Image, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -44,11 +50,6 @@ const OnboardingScreen: React.FC = () => {
     };
   }, [activeIndex, isLoading, welcomeMessagePlayed, title, description]); // Dependencies
 
-  // Redirect if user is logged in
-  if (!isLoading && isLoggedIn) {
-    return <Redirect href="/home" />;
-  }
-
   // Handle navigation to the next slide or sign-in
   const handleNext = () => {
     if (activeIndex === slides.length - 1) {
@@ -57,6 +58,16 @@ const OnboardingScreen: React.FC = () => {
       carouselRef.current?.scrollTo({ index: activeIndex + 1, animated: true });
     }
   };
+  // Redirect if user is logged in
+  if (isLoading)
+    return (
+      <View className="flex items-center justify-center">
+        <ActivityIndicator size={"large"} />
+      </View>
+    );
+  if (!isLoading && isLoggedIn) {
+    return <Redirect href="/home" />;
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-white px-6 justify-center">
