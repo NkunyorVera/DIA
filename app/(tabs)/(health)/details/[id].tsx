@@ -145,6 +145,7 @@
 import CustomText from "@/components/CustomText";
 import { getSingleHealthBenefit } from "@/lib/appwite_utility";
 import { HealthBenefit } from "@/lib/types";
+import { formatDate } from "@/lib/utils";
 import { showToast } from "@/utils/imageHelpers";
 import { Feather, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -288,14 +289,7 @@ const HealthBenefitDetailsScreen = () => {
                     Deadline
                   </CustomText>
                   <CustomText className="text-gray-900">
-                    {new Date(mockBenefit.deadline).toLocaleDateString(
-                      "en-US",
-                      {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      }
-                    )}
+                    {formatDate(mockBenefit.deadline)}
                   </CustomText>
                 </View>
               </View>

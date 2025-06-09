@@ -18,11 +18,14 @@ export const validateInputs = ({
   return null;
 };
 
-export const formatDate = (dateString: string): string => {
-  const formattedDate = new Date(dateString).toLocaleDateString("en-us", {
+export const formatDate = (
+  dateString: string,
+  type?: "long" | "short"
+): string => {
+  const formattedDate = new Date(dateString).toLocaleDateString("en-US", {
     day: "numeric",
-    month: "long",
-    year: "numeric",
+    month: type === "short" ? "numeric" : "long",
+    year: type === "short" ? "2-digit" : "numeric",
   });
-  return String(formatDate);
+  return String(formattedDate);
 };

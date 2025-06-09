@@ -69,3 +69,16 @@ export type HealthBenefit = {
   website: string;
   organization: string;
 };
+
+export type JobType = {
+  $id: string;
+  company: string;
+  location?: string;
+  type: string;
+  websit?: string;
+  description: string;
+  deadline: string;
+  title: string;
+  salary: string;
+  responsibilities?: string[];
+};
