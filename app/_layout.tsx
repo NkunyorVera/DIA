@@ -1,5 +1,4 @@
 import { GlobalProvider } from "@/context/GlobalProvider";
-import { setAfricanVoice } from "@/lib/speech";
 import { toastConfig } from "@/lib/toast";
 import * as Font from "expo-font";
 import { Stack } from "expo-router";
@@ -24,7 +23,6 @@ export default function RootLayout() {
 
   useEffect(() => {
     loadFonts();
-    setAfricanVoice();
   }, []);
 
   if (!fontsLoaded) return null; // or <AppLoading />
