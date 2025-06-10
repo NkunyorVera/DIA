@@ -52,3 +52,38 @@ export const slides: SlideType[] = [
     imageUrl: require("@/assets/health.jpg"),
   },
 ];
+
+export const communities = [
+  {
+    id: "1",
+    name: "Blind Sight",
+    rating: 4.2,
+    members: "10k+",
+    groupDisability: "Blind",
+    description: "Support community for visually impaired individuals",
+  },
+  {
+    id: "2",
+    name: "Gentle Deaf Cohort",
+    rating: 3.7,
+    members: "6k+",
+    groupDisability: "Deaf",
+    description: "Community for deaf and hard of hearing people",
+  },
+  {
+    id: "3",
+    name: "Lame Walkers",
+    rating: 4.2,
+    members: "24k+",
+    groupDisability: "Lame",
+    description: "Support group for people with mobility challenges",
+  },
+  {
+    id: "4",
+    name: "Arm Band",
+    rating: 4.5,
+    members: "8k+",
+    groupDisability: "Hand-Disability",
+    description: "Community for people with hand disability.",
+  },
+];

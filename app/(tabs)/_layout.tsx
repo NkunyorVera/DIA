@@ -64,7 +64,7 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="community"
+        name="(community)"
         options={{
           title: "Community",
           tabBarLabelStyle: {

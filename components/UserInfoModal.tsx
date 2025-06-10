@@ -26,8 +26,7 @@ const selectInputValues = [
   { label: "Blind", value: "blind" },
   { label: "Deaf", value: "deaf" },
   { label: "Lame", value: "lame" },
-  { label: "Amputated", value: "amputated" },
-  { label: "Other", value: "other" },
+  { label: "Hand-disability", value: "hand" },
 ];
 
 const selectInputStyle = {
