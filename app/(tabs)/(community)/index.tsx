@@ -91,10 +91,11 @@ export default function CommunitiesScreen() {
                 <CustomText className="text-gray-600 mb-3">
                   {community.members} Members
                 </CustomText>
-
                 <TouchableOpacity
                   key={community.id}
-                  className="bg-purple-600 p-4 rounded-xl shadow-sm"
+                  className={`${
+                    isMember ? "bg-purple-600" : "bg-gray-300"
+                  } p-4 rounded-xl shadow-sm`}
                   onPress={
                     isMember
                       ? () => goToCommunity(community.id)
@@ -107,7 +108,9 @@ export default function CommunitiesScreen() {
                         }
                   }
                 >
-                  <CustomText className="text-white">View community</CustomText>
+                  <CustomText className="text-white">
+                    {isMember ? "View community" : "Not member"}
+                  </CustomText>
                 </TouchableOpacity>
               </View>
             );

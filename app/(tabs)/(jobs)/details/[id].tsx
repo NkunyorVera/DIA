@@ -12,6 +12,7 @@ import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Image,
+  Linking,
   Pressable,
   ScrollView,
   TouchableOpacity,
@@ -142,6 +143,22 @@ const SingleJobScreen = () => {
                 )}
               </View>
             </View>
+            {job.website && (
+              <TouchableOpacity
+                className="bg-blue-50 p-4 mt-5 mb-10 rounded-xl flex-row items-center justify-between"
+                onPress={() => Linking.openURL(job.website)}
+              >
+                <View className="flex-row items-center space-x-3">
+                  <View className="bg-blue-100 p-2 rounded-full">
+                    <Feather name="external-link" size={18} color="#3b82f6" />
+                  </View>
+                  <CustomText className="text-blue-600 font-medium">
+                    Visit Website
+                  </CustomText>
+                </View>
+                <Feather name="chevron-right" size={20} color="#3b82f6" />
+              </TouchableOpacity>
+            )}
           </ScrollView>
 
           {/* Apply Button */}

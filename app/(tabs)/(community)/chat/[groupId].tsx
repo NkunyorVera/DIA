@@ -1,3 +1,4 @@
+import { useGlobalContext } from "@/context/GlobalProvider";
 import { communities } from "@/lib/data";
 import { useLocalSearchParams } from "expo-router";
 import React, { useRef, useState } from "react";
@@ -46,14 +47,14 @@ const ChatScreen = () => {
     },
     {
       id: "3",
-      text: "Pretty good. Just working on some React Native stuff.",
+      text: "Not good. I need a doctor",
       isMe: false,
       sender: "Jamie",
       timestamp: new Date(Date.now() - 1000 * 60 * 3),
     },
     {
       id: "4",
-      text: "That sounds interesting! What are you building?",
+      text: "Why, what's the matter?",
       isMe: true,
       timestamp: new Date(Date.now() - 1000 * 60 * 2),
     },
@@ -62,6 +63,7 @@ const ChatScreen = () => {
   const [newMessage, setNewMessage] = useState("");
   const flatListRef = useRef<FlatList>(null);
   const { groupId } = useLocalSearchParams();
+  const { user } = useGlobalContext();
 
   // Mock group data - in a real app you would fetch this based on the ID
   const groupInfo = communities.find((community) => community.id === groupId);
